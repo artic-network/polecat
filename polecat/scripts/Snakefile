@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import csv
+from Bio import SeqIO
+import os
+
+
+##### Configuration #####
+
+if config.get("force"):
+    config["force"] = "--forceall "
+
+
+##### Target rules #####
+rule all:
+    input:
+        os.path.join(config["outdir"],"cluster.html")
+
+
+##### Modules #####
+include: "polecat_pipeline.smk"
