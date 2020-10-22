@@ -1,33 +1,58 @@
 import os
+import csv
 
-"""
-Output csv from jclusterfunk
-most_recent_tip,tip_count,admin0_count,admin1_count,admin2_count,tips
-2020-01-23,2,1,0,0,Hong_Kong/HKPU2_1801/2020|Hong_Kong/VB20017970-2/2020
-2020-01-25,2,1,0,0,Wuhan/0125-A137/2020|Wuhan/0125-A169/2020
-2020-01-25,2,1,0,0,Wuhan/0125-A160/2020|Wuhan/0125-A148/2020
-"""
-rule prune_out_catchments:
+rule all:
     input:
-        tree = config["tree"]
+        expand(os.path.join(config["clusterdir"],"{cluster}","report","{cluster}.md"), cluster= config["clusters"]),
+        os.path.join(config["outdir"],"polecat","report","figures","fig_prompt.txt")
+
+rule split_metadata:
+    input:
+        filtered_metadata = config["filtered_metadata"]
+    params:
+        cluster = "{cluster}"
     output:
-        csv = os.path.join(config["outdir"],"jclusterfunk","highest_parent.csv")
+        metadata = os.path.join(config["clusterdir"],"{cluster}.metadata.csv")
+    run:
+        with open(output[0], "w") as fw:
+            with open(input.filtered_metadata, "r") as f:
+                reader = csv.DictReader(f)
+                header = reader.fieldnames
+
+                writer = csv.DictWriter(fw, fieldnames=header,lineterminator='\n')
+                writer.writeheader()
+
+                for row in reader:
+                    if row["cluster"] == params.cluster:
+                        writer.writerow(row)
+
+rule civet_instance:
+    input:
+        query = rules.split_metadata.output.metadata
+    params:
+        outdir = os.path.join(config["clusterdir"],"{cluster}"),
+        cluster = "{cluster}"
+    output:
+        report = os.path.join(config["clusterdir"],"{cluster}","report","{cluster}.md")
     shell:
         """
-        jclusterfunk polecat \
-        -i "{input.tree:q}" \
-        -o "{output.csv}" \
-        --max-parent {config[up_distance]} \
-        --max-child {config[down_distance]} \
-        -f newick \
+        civet -i {input.query:q} \
+        -o {params.cluster} \
+        --outdir {params.outdir} \
+        --input-column sequence_name \
+        --data-column sequence_name \
+        -d {config[datadir]}
         """
 
-rule make_webpage:
+rule gather_civet:
     input:
-        rules.prune_out_catchments.output.csv
+        expand(os.path.join(config["clusterdir"],"{cluster}","report","{cluster}.md"), cluster=config["clusters"])
+    params:
+        outdir = os.path.join(config["clusterdir"],"{cluster}"),
+        cluster = "{cluster}"
     output:
-        os.path.join(config["outdir"],"cluster.html")
+        os.path.join(config["outdir"],"polecat","report","figures","fig_prompt.txt")
     shell:
         """
-        touch {output:q}
+        touch {output}
         """

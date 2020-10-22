@@ -3,8 +3,9 @@
 import csv
 from Bio import SeqIO
 import os
+import yaml
 
-
+output_prefix = config["output_prefix"]
 ##### Configuration #####
 
 if config.get("force"):
@@ -14,8 +15,120 @@ if config.get("force"):
 ##### Target rules #####
 rule all:
     input:
-        os.path.join(config["outdir"],"cluster.html")
+        os.path.join(config["outdir"],"report", f"{output_prefix}.html"),
+        os.path.join(config["outdir"],"tip_metadata.csv")
 
+"""
+Output csv from jclusterfunk
+most_recent_tip,tip_count,admin0_count,admin1_count,admin2_count,tips
+2020-01-23,2,1,0,0,Hong_Kong/HKPU2_1801/2020|Hong_Kong/VB20017970-2/2020
+2020-01-25,2,1,0,0,Wuhan/0125-A137/2020|Wuhan/0125-A169/2020
+2020-01-25,2,1,0,0,Wuhan/0125-A160/2020|Wuhan/0125-A148/2020
+"""
+# rule polecat_csv:
+#     input:
+#         tree = config["background_tree"],
+#         metadata = config["background_metadata"]
+#     output:
+#         csv = os.path.join(config["outdir"],"clusters.all.csv")
+#     shell:
+#         """
+#         jclusterfunk polecat \
+#         -i "{input.tree:q}" \
+#         -m {input.metadata:q} \
+#         {config[max_age]} \
+#         {config[max_count]} \
+#         {config[max_recency]} \
+#         {config[max_size]} \
+#         {config[min_size]} \
+#         {config[min_UK]} \
+#         {config[optimize_by]} \
+#         {config[rank_by]} \
+#         --id-column sequence_name \
+#         -o "{output.csv}" \
+#         --ignore-missing 
+#         """
 
-##### Modules #####
-include: "polecat_pipeline.smk"
+rule process_clusters:
+    input:
+        snakefile = os.path.join(workflow.current_basedir,"polecat_pipeline.smk"),
+        background_metadata = config["background_metadata"],
+        query = config["test"]
+    threads: workflow.cores
+    params:
+        clusterdir = os.path.join(config["outdir"],"cluster_trees")
+    output:
+        filtered_metadata = os.path.join(config["outdir"],"tip_metadata.csv"),
+        yaml = os.path.join(config["tempdir"],"config.yaml")
+    run:
+        clusters = []
+        tips_in_clusters = {}
+        with open(input.query, "r") as f:
+            reader = csv.DictReader(f)
+            
+            for row in reader:
+                clusters.append(row["node_number"])
+                tips = row["tips"].split("|")
+                for tip in tips:
+                    tips_in_clusters[tip] = row["node_number"]
+
+        with open(output.filtered_metadata, "w") as fw:
+
+            with open(input.background_metadata, "r") as f:
+                reader = csv.DictReader(f)
+                header = reader.fieldnames
+                header.append("cluster")
+
+                writer = csv.DictWriter(fw, fieldnames=header,lineterminator='\n')
+                writer.writeheader()
+                for row in reader:
+                    if row["sequence_name"] in tips_in_clusters:
+                        new_row = row
+                        new_row["cluster"] = tips_in_clusters[row["sequence_name"]]
+
+                        writer.writerow(new_row)
+        
+        config["clusters"] = clusters
+        config["clusterdir"] = params.clusterdir
+
+        with open(output.yaml, 'w') as fw:
+            yaml.dump(config, fw)
+
+        shell("snakemake --nolock --snakefile {input.snakefile:q} "
+                            "{config[force]} "
+                            "{config[log_string]} "
+                            "--directory {config[tempdir]:q} "
+                            "--configfile {output.yaml:q} "
+                            "--config "
+                            # f"clusters='{clusters}' "
+                            # "outdir={config[outdir]:q} "
+                            # "datadir={config[datadir]:q} " 
+                            # "clusterdir={params.cluster_dir:q} "
+                            # "tempdir={config[tempdir]:q} "
+                            "filtered_metadata={output.filtered_metadata:q} "
+                            "--cores {workflow.cores}")
+
+rule make_report:
+    input:
+        rules.process_clusters.output.filtered_metadata
+    output:
+        os.path.join(config["outdir"],"report", f"{output_prefix}.md")
+    shell:
+        """
+        touch {output:q}
+        """
+
+rule launch_grip:
+    input:
+        mdfile = os.path.join(config["outdir"],"report", f"{output_prefix}.md")
+    output:
+        out_file = os.path.join(config["outdir"],"report",f"{output_prefix}.html")
+    run:
+        shell("grip {input.mdfile:q} --export")
+        if config["launch_browser"]:
+            for i in range(8000, 8100):
+                try:
+                    shell("grip {input.mdfile:q} -b {i}")
+                    break
+                except:
+                    print("Trying next port")

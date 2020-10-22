@@ -20,7 +20,8 @@ setup(name='polecat',
       "polecat/scripts/polecatfunks.py"],
       # package_data={"polecat":["data/*"]},
       install_requires=[
-            "biopython>=1.70"
+            "biopython>=1.70",
+            "grip>=4.5.2"
         ],
       cmdclass={
         'npm_install': NPMInstall
