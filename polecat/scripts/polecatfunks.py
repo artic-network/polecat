@@ -23,6 +23,14 @@ def get_defaults():
                     "max_size":"",
                     "min_size":10,
                     "min_UK":"",
+                    "sample_date_column":"sample_date",
+                    "database_sample_date_column":"sample_date",
+                    "display_name":False,
+                    "tree_fields":"country",
+                    "node_summary":"country",
+                    "colour_by":"country=Paired",
+                    "label_fields":False,
+                    "date_fields":False,
                     "optimize_by":"",
                     "test":"/Users/s1680070/repositories/polecat/polecat/tests/test.csv",
                     "rank_by":"growth-rate",
@@ -34,7 +42,8 @@ def get_defaults():
                     "summary_fields":"node_name,most_recent_tip,tip_count,admin0_count,admin1_count",
                     "cluster_fields":"sequence_name,lineage,country",
                     "no_temp":False,
-                    "force":True
+                    "force":True,
+                    "safety_level":0
                     }
     return default_dict
 
@@ -101,14 +110,6 @@ def qc_cluster_arg(key,arg,type_var,config):
             sys.stderr.write(qcfunk.cyan(f"Error: {arg} must be {type_var}\n"))
             sys.exit(-1)
 
-
-def report_group_to_config(args,config):
-    ## summary_fields
-    qcfunk.add_arg_to_config("summary_fields",args.summary_fields, config)
-
-    ## cluster_fields
-    qcfunk.add_arg_to_config("cluster_fields",args.cluster_fields, config)
-        
 def cluster_group_to_config(args,config):
     ## max_age
     qcfunk.add_arg_to_config("max_age",args.max_age, config)
@@ -141,6 +142,35 @@ def cluster_group_to_config(args,config):
     ## rank_by
     qcfunk.add_arg_to_config("rank_by",args.rank_by, config)
     qc_cluster_arg("rank_by","--rank-by",str,config)
+
+def report_group_to_config(args,config):
+    ## summary_fields
+    qcfunk.add_arg_to_config("summary_fields",args.summary_fields, config)
+
+    ## cluster_fields
+    qcfunk.add_arg_to_config("cluster_fields",args.cluster_fields, config)
+        
+    ## display_name
+    qcfunk.add_arg_to_config("display_name", args.display_name, config)
+    
+    ## colour_by
+    qcfunk.add_arg_to_config("colour_by",args.colour_by, config)
+
+    ## tree_fields
+    qcfunk.add_arg_to_config("tree_fields",args.tree_fields, config)
+
+    ## label_fields
+    qcfunk.add_arg_to_config("label_fields",args.label_fields, config)
+
+    ##date_fields
+    qcfunk.add_arg_to_config("date_fields", args.date_fields, config)
+
+    ##sample date column
+    qcfunk.add_arg_to_config("sample_date_column", args.sample_date_column,config)
+    qcfunk.add_arg_to_config("database_sample_date_column", args.database_sample_date_column, config)
+
+    ## node-summary
+    qcfunk.add_arg_to_config("node_summary",args.node_summary, config)
 
 
 def check_metadata_for_report_fields(config):
