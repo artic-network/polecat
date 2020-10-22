@@ -33,14 +33,14 @@ def main(sysargs = sys.argv[1:]):
     io_group = parser.add_argument_group('input output options')
     io_group.add_argument('-i',"--input", action="store",help="Input config file", dest="input")
     io_group.add_argument('-t',"--tree",action="store",help="Input tree file", dest="tree")
-    io_group.add_argument('-m',"--metadata",action="store",help="Input metadata csv", dest="metadata")
+    #io_group.add_argument('-m',"--metadata",action="store",help="Input metadata csv", dest="metadata")
     io_group.add_argument('-o','--outdir', action="store",help="Output directory. Default: current working directory")
 
-    tree_group = parser.add_argument_group('tree options')
-    tree_group.add_argument('--distance', action="store",help="Extraction from large tree radius. Default: 2", dest="distance",type=int)
-    tree_group.add_argument('--up-distance', action="store",help="Upstream distance to extract from large tree. Default: 2", dest="up_distance",type=int)
-    tree_group.add_argument('--down-distance', action="store",help="Downstream distance to extract from large tree. Default: 2", dest="down_distance",type=int)
-    tree_group.add_argument('--collapse-threshold', action='store',type=int,help="Minimum number of nodes to collapse on. Default: 1", dest="threshold")
+    cluster_group = parser.add_argument_group('cluster options')
+    cluster_group.add_argument('--criterion', action="store",help="Citerion to use to find optimal cluster. Default: none", dest="citerion")
+    cluster_group.add_argument('--min-size', action='store',type=int,help="Minimum cluster size. Default: 5", dest="threshold")
+    cluster_group.add_argument('--rank-by', action="store",help="Statistic to rank clusters by. Default: rate", dest="rank_by")
+    cluster_group.add_argument('--number', action="store",help="Number of clusters to return. Default: 10", dest="rank_number")
 
     report_group = parser.add_argument_group('report options')
     report_group.add_argument('--report-fields', action="store",help="Comma-separated string of which statistics to include in the report. Default: most_recent_tip,tip_count,admin0_count,admin1_count", dest="report_fields")
@@ -49,7 +49,7 @@ def main(sysargs = sys.argv[1:]):
     misc_group.add_argument('--tempdir',action="store",help="Specify where you want the temporary stuff to go Default: $TMPDIR")
     misc_group.add_argument("--no-temp",action="store_true",help="Output all intermediate files")
     misc_group.add_argument("--verbose",action="store_true",help="Print lots of stuff to screen")
-    misc_group.add_argument('-t', '--threads', action='store',dest="threads",type=int,help="Number of threads")
+    misc_group.add_argument('--threads', action='store',dest="threads",type=int,help="Number of threads")
     misc_group.add_argument("-v","--version", action='version', version=f"polecat {__version__}")
     
     """
