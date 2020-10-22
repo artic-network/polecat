@@ -26,22 +26,25 @@ rule split_metadata:
                     if row["cluster"] == params.cluster:
                         writer.writerow(row)
 
-rule civet_instance:
+rule cluster_catchment:
     input:
+        tree = config["background_tree"],
         query = rules.split_metadata.output.metadata
     params:
         outdir = os.path.join(config["clusterdir"],"{cluster}"),
         cluster = "{cluster}"
     output:
-        report = os.path.join(config["clusterdir"],"{cluster}","report","{cluster}.md")
+        tree = os.path.join(config["tempdir"], "cluster_civet","{cluster}_subtree_1.newick")
     shell:
         """
-        civet -i {input.query:q} \
-        -o {params.cluster} \
-        --outdir {params.outdir} \
-        --input-column sequence_name \
-        --data-column sequence_name \
-        -d {config[datadir]}
+        jclusterfunk context \
+        -i "{input.tree}" \
+        -o "{params.outdir}" \
+        --mrca \
+        -f newick \
+        -p {params.cluster}_ \
+        -m "{input.query}" \
+        --id-column sequence_name
         """
 
 rule gather_civet:
