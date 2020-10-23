@@ -5,11 +5,13 @@ from Bio import SeqIO
 import os
 import yaml
 
+
 output_prefix = config["output_prefix"]
 ##### Configuration #####
 
 if config.get("force"):
     config["force"] = "--forceall "
+
 
 
 ##### Target rules #####
@@ -25,35 +27,36 @@ most_recent_tip,tip_count,admin0_count,admin1_count,admin2_count,tips
 2020-01-25,2,1,0,0,Wuhan/0125-A137/2020|Wuhan/0125-A169/2020
 2020-01-25,2,1,0,0,Wuhan/0125-A160/2020|Wuhan/0125-A148/2020
 """
-# rule polecat_csv:
-#     input:
-#         tree = config["background_tree"],
-#         metadata = config["background_metadata"]
-#     output:
-#         csv = os.path.join(config["outdir"],"clusters.all.csv")
-#     shell:
-#         """
-#         jclusterfunk polecat \
-#         -i "{input.tree:q}" \
-#         -m {input.metadata:q} \
-#         {config[max_age]} \
-#         {config[max_count]} \
-#         {config[max_recency]} \
-#         {config[max_size]} \
-#         {config[min_size]} \
-#         {config[min_UK]} \
-#         {config[optimize_by]} \
-#         {config[rank_by]} \
-#         --id-column sequence_name \
-#         -o "{output.csv}" \
-#         --ignore-missing 
-#         """
+rule polecat_csv:
+    input:
+        tree = config["background_tree"],
+        metadata = config["background_metadata"]
+    output:
+        csv = os.path.join(config["outdir"],"clusters.all.csv")
+    shell:
+        """
+        jclusterfunk polecat \
+        -i "{input.tree:q}" \
+        -m {input.metadata:q} \
+        {config[max_age]} \
+        {config[max_count]} \
+        {config[max_recency]} \
+        {config[max_size]} \
+        {config[min_size]} \
+        {config[min_UK]} \
+        {config[optimize_by]} \
+        {config[rank_by]} \
+        --id-column sequence_name \
+        -o "{output.csv}" \
+        --ignore-missing 
+        """
 
 rule process_clusters:
     input:
         snakefile = os.path.join(workflow.current_basedir,"polecat_pipeline.smk"),
         background_metadata = config["background_metadata"],
-        query = config["test"]
+        query = rules.polecat_csv.output.csv
+        # query = config["test"]
     threads: workflow.cores
     params:
         clusterdir = os.path.join(config["outdir"],"cluster_trees")
@@ -90,33 +93,36 @@ rule process_clusters:
         
         config["clusters"] = clusters
         config["clusterdir"] = params.clusterdir
-
         with open(output.yaml, 'w') as fw:
             yaml.dump(config, fw)
-
-        shell("snakemake --nolock --snakefile {input.snakefile:q} "
-                            "{config[force]} "
-                            "{config[log_string]} "
-                            "--directory {config[tempdir]:q} "
-                            "--configfile {output.yaml:q} "
-                            "--config "
-                            # f"clusters='{clusters}' "
-                            # "outdir={config[outdir]:q} "
-                            # "datadir={config[datadir]:q} " 
-                            # "clusterdir={params.cluster_dir:q} "
-                            # "tempdir={config[tempdir]:q} "
-                            "filtered_metadata={output.filtered_metadata:q} "
-                            "--cores {workflow.cores}")
+        
+        # shell("snakemake --nolock --snakefile {input.snakefile:q} "
+        #                     "{config[force]} "
+        #                     "{config[log_string]} "
+        #                     "--directory {config[tempdir]:q} "
+        #                     "--configfile {output.yaml:q} "
+        #                     "--config "
+        #                     # f"clusters='{clusters}' "
+        #                     # "outdir={config[outdir]:q} "
+        #                     # "datadir={config[datadir]:q} " 
+        #                     # "clusterdir={params.cluster_dir:q} "
+        #                     # "tempdir={config[tempdir]:q} "
+        #                     "filtered_metadata={output.filtered_metadata:q} "
+        #                     "--cores {workflow.cores}")
 
 rule make_report:
     input:
-        rules.process_clusters.output.filtered_metadata
+        rules.process_clusters.output.filtered_metadata,
+        query = rules.polecat_csv.output.csv
     output:
-        os.path.join(config["outdir"],"report", f"{output_prefix}.md")
-    shell:
-        """
-        touch {output:q}
-        """
+        report = os.path.join(config["outdir"],"report", f"{output_prefix}.md"),
+        yaml = os.path.join(config["tempdir"],"report_config.yaml")
+    run:
+        config["all_clusters"] = input.query 
+        with open(output.yaml, 'w') as fw:
+            yaml.dump(config, fw)
+            
+        shell("polecat_report.py --config {output.yaml} --report {output.report}")
 
 rule launch_grip:
     input:

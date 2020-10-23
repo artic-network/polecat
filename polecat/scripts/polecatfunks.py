@@ -21,8 +21,10 @@ def get_defaults():
                     "max_count":5,
                     "max_recency":"",
                     "max_size":"",
-                    "min_size":10,
+                    "min_size":5,
                     "min_UK":"",
+                    "optimize_by":"",
+                    "rank_by":"growth-rate",
                     "sample_date_column":"sample_date",
                     "database_sample_date_column":"sample_date",
                     "display_name":False,
@@ -31,18 +33,17 @@ def get_defaults():
                     "colour_by":"country=Paired",
                     "label_fields":False,
                     "date_fields":False,
-                    "optimize_by":"",
-                    "test":"/Users/s1680070/repositories/polecat/polecat/tests/test.csv",
-                    "rank_by":"growth-rate",
+                    "test":"/Users/s1680070/repositories/polecat/polecat/tests/test.csv",                  
                     "CLIMB":False,
                     "remote":False,
                     "config":False,
                     "data_column":"sequence_name",
                     "output_prefix":"polecat",
-                    "summary_fields":"node_name,most_recent_tip,tip_count,admin0_count,admin1_count",
-                    "cluster_fields":"sequence_name,lineage,country",
+                    "summary_fields":"node_number,most_recent_tip,tip_count,admin0_count,admin1_count",
+                    "cluster_fields":"node_number,day_range,tip_count,uk_tip_count,uk_chain_count,identical_count,haplotype",
                     "no_temp":False,
                     "force":True,
+                    "launch_browser":False,
                     "safety_level":0
                     }
     return default_dict
@@ -79,7 +80,9 @@ def get_outdir(outdir_arg,output_prefix_arg,cwd,config):
         outdir, rel_outdir = make_timestamped_outdir(cwd,outdir,config)
     
     today = date.today()
+    
     d = today.strftime("%Y-%m-%d")
+    config["today"] = f"{d}"
     output_prefix = config["output_prefix"]
     split_prefix = output_prefix.split("_")
     if split_prefix[-1].startswith("20"):
@@ -150,46 +153,46 @@ def report_group_to_config(args,config):
     ## cluster_fields
     qcfunk.add_arg_to_config("cluster_fields",args.cluster_fields, config)
         
-    ## display_name
-    qcfunk.add_arg_to_config("display_name", args.display_name, config)
+    # ## display_name
+    # qcfunk.add_arg_to_config("display_name", args.display_name, config)
     
-    ## colour_by
-    qcfunk.add_arg_to_config("colour_by",args.colour_by, config)
+    # ## colour_by
+    # qcfunk.add_arg_to_config("colour_by",args.colour_by, config)
 
-    ## tree_fields
-    qcfunk.add_arg_to_config("tree_fields",args.tree_fields, config)
+    # ## tree_fields
+    # qcfunk.add_arg_to_config("tree_fields",args.tree_fields, config)
 
-    ## label_fields
-    qcfunk.add_arg_to_config("label_fields",args.label_fields, config)
+    # ## label_fields
+    # qcfunk.add_arg_to_config("label_fields",args.label_fields, config)
 
-    ##date_fields
-    qcfunk.add_arg_to_config("date_fields", args.date_fields, config)
+    # ##date_fields
+    # qcfunk.add_arg_to_config("date_fields", args.date_fields, config)
 
-    ##sample date column
-    qcfunk.add_arg_to_config("sample_date_column", args.sample_date_column,config)
-    qcfunk.add_arg_to_config("database_sample_date_column", args.database_sample_date_column, config)
+    # ##sample date column
+    # qcfunk.add_arg_to_config("sample_date_column", args.sample_date_column,config)
+    # qcfunk.add_arg_to_config("database_sample_date_column", args.database_sample_date_column, config)
 
-    ## node-summary
-    qcfunk.add_arg_to_config("node_summary",args.node_summary, config)
+    # ## node-summary
+    # qcfunk.add_arg_to_config("node_summary",args.node_summary, config)
 
 
 def check_metadata_for_report_fields(config):
-
-    cluster_fields = config["cluster_fields"].split(",")
-    data_column = config["data_column"]
-    with open(config["background_metadata"], "r") as f:
-        reader = csv.DictReader(f)
-        header = reader.fieldnames
-        if data_column not in header:
-            sys.stderr.write(qcfunk.cyan(f'Error: {data_column} not found in background metadata file\n'))
-            sys.exit(-1)
-        if "adm2" not in header:
-            sys.stderr.write(qcfunk.cyan(f'Error: adm2 required to run polecat. Please run from CLIMB or supply adm2\n'))
-            sys.exit(-1)
-        for field in cluster_fields:
-            if field not in header:
-                sys.stderr.write(qcfunk.cyan(f'Error: {field} not found in background metadata file\n'))
-                sys.exit(-1)
+    pass
+    # cluster_fields = config["cluster_fields"].split(",")
+    # data_column = config["data_column"]
+    # with open(config["background_metadata"], "r") as f:
+    #     reader = csv.DictReader(f)
+    #     header = reader.fieldnames
+    #     if data_column not in header:
+    #         sys.stderr.write(qcfunk.cyan(f'Error: {data_column} not found in background metadata file\n'))
+    #         sys.exit(-1)
+    #     if "adm2" not in header:
+    #         sys.stderr.write(qcfunk.cyan(f'Error: adm2 required to run polecat. Please run from CLIMB or supply adm2\n'))
+    #         sys.exit(-1)
+    #     for field in cluster_fields:
+    #         if field not in header:
+    #             sys.stderr.write(qcfunk.cyan(f'Error: {field} not found in background metadata file\n'))
+    #             sys.exit(-1)
 
 def print_data_error(data_dir):
     sys.stderr.write(qcfunk.cyan(f"Error: data directory should contain the following files or additionally supply a background metadata file:\n") + f"\
@@ -382,79 +385,3 @@ def make_all_of_the_trees(treedir, tree_name_stem, taxon_dict,config):
                 outfile = os.path.join(config["figdir"], f"{tree_name}.svg")
                 make_cluster_tree(tree, tree_name, num_tips, taxon_dict,outfile,config)     
             
-def make_cluster_tree(My_Tree, tree_name, num_tips, taxon_dict, outfile,config):
-    
-    My_Tree.uncollapseSubtree()
-
-    if num_tips < 10:
-        page_height = num_tips
-    else:
-        page_height = num_tips/2  
-
-    tallest_height = config["tallest_height"]
-    offset = tallest_height - My_Tree.treeHeight
-    space_offset = tallest_height/10
-    absolute_x_axis_size = tallest_height+space_offset+space_offset + tallest_height #changed from /3 
-
-    tipsize = 40
-    c_func=lambda k: 'dimgrey' ## colour of branches
-    l_func=lambda k: 'lightgrey' ## colour of dotted lines
-    s_func = lambda k: tipsize*5 if k.name in taxon_dict else tipsize
-    z_func=lambda k: 100
-    b_func=lambda k: 2.0 #branch width
-    so_func=lambda k: tipsize*5 if k.name in taxon_dict else 0
-    zo_func=lambda k: 99
-    zb_func=lambda k: 98
-    zt_func=lambda k: 97
-    font_size_func = lambda k: 25 if k.name in taxon_dict else 15
-    kwargs={'ha':'left','va':'center','size':12}
-
-    cn_func = lambda k: "#8eafa6" if k.name in taxon_dict else 'dimgrey'
-    co_func=lambda k: "#8eafa6" if k.name in taxon_dict else 'dimgrey' 
-    outline_colour_func = lambda k: 'dimgrey' 
-
-    x_attr=lambda k: k.height + offset
-    y_attr=lambda k: k.y
-
-    y_values = []
-    for k in My_Tree.Objects:
-        y_values.append(y_attr(k))
-
-    min_y_prep = min(y_values)
-    max_y_prep = max(y_values)
-
-    vertical_spacer = 0.5 
-
-    full_page = page_height + vertical_spacer + vertical_spacer
-    min_y,max_y = min_y_prep-vertical_spacer,max_y_prep+vertical_spacer
-
-    x_values = []
-    for k in My_Tree.Objects:
-        x_values.append(x_attr(k))
-    max_x = max(x_values)
-    
-    fig,ax = plt.subplots(figsize=(20,page_height),facecolor='w',frameon=False, dpi=200)
-    
-    My_Tree.plotTree(ax, colour_function=c_func, x_attr=x_attr, y_attr=y_attr, branchWidth=b_func)
-    
-    My_Tree.plotPoints(ax, x_attr=x_attr, colour_function=cn_func,y_attr=y_attr, size_function=s_func, outline_colour=outline_colour_func)
-    My_Tree.plotPoints(ax, x_attr=x_attr, colour_function=co_func, y_attr=y_attr, size_function=so_func, outline_colour=outline_colour_func)
-
-
-    ax.plot([0,0.00003], [-0.5,-0.5], ls='-', lw=2, color="dimgrey")
-    ax.text(0.000015,-1.15,"1 SNP",size=20, ha="center", va="center")
-
-    ax.spines['top'].set_visible(False) ## make axes invisible
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
-    ax.set_xticks([])
-    ax.set_yticks([])
-
-    ax.set_xlim(-space_offset,absolute_x_axis_size)
-    ax.set_ylim(min_y-1,max_y)
-
-
-    fig.tight_layout()
-    
-    plt.savefig(outfile, format="svg")

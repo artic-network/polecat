@@ -17,6 +17,7 @@ setup(name='polecat',
       packages=find_packages(),
       scripts=["polecat/scripts/Snakefile",
       "polecat/scripts/polecat_pipeline.smk",
+      "polecat/scripts/polecat_report.py",
       "polecat/scripts/polecatfunks.py"],
       # package_data={"polecat":["data/*"]},
       install_requires=[
