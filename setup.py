@@ -18,6 +18,7 @@ setup(name='polecat',
       scripts=["polecat/scripts/Snakefile",
       "polecat/scripts/polecat_pipeline.smk",
       "polecat/scripts/polecat_report.py",
+      "polecat/scripts/make_trees.py",
       "polecat/scripts/polecatfunks.py"],
       # package_data={"polecat":["data/*"]},
       install_requires=[

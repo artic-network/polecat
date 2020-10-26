@@ -28,57 +28,58 @@ rule split_metadata:
                     if row["cluster"] == params.cluster:
                         writer.writerow(row)
 
-rule run_civet:
-    input:
-        query = rules.split_metadata.output.metadata
-    params:
-        outdir = os.path.join(config["clusterdir"],"{cluster}"),
-        cluster = "civet_{cluster}"
-    output:
-        os.path.join(config["clusterdir"],"{cluster}","report","civet_{cluster}_"+f"{today}.md")
-    shell:
-        # "touch {output}"
-        """
-        civet -i {input.query:q} \
-            -o {params.cluster} \
-            --up-distance 2  \
-            --down-distance 100 \
-            --outdir {params.outdir} \
-            --input-column sequence_name \
-            --data-column sequence_name \
-            -d {config[datadir]}
-        """
-
-# rule cluster_catchment:
+# rule run_civet:
 #     input:
-#         tree = config["background_tree"],
 #         query = rules.split_metadata.output.metadata
 #     params:
 #         outdir = os.path.join(config["clusterdir"],"{cluster}"),
-#         cluster = "{cluster}"
+#         cluster = "civet_{cluster}"
 #     output:
-#         tree = os.path.join(config["clusterdir"],"{cluster}","{cluster}_subtree_1.newick")
+#         os.path.join(config["clusterdir"],"{cluster}","report","civet_{cluster}_"+f"{today}.md")
 #     shell:
+#         # "touch {output}"
 #         """
-#         jclusterfunk context \
-#         -i "{input.tree}" \
-#         -o "{params.outdir}" \
-#         --mrca \
-#         -f newick \
-#         -p {params.cluster}_ \
-#         -m "{input.query}" \
-#         --id-column sequence_name
+#         civet -i {input.query:q} \
+#             -o {params.cluster} \
+#             --up-distance 2  \
+#             --down-distance 100 \
+#             --outdir {params.outdir} \
+#             --input-column sequence_name \
+#             --data-column sequence_name \
+#             -d {config[datadir]}
 #         """
 
-# rule make_tree_figure:
-#     input:
-#         tree= os.path.join(config["tempdir"], "cluster_civet","{cluster}_subtree_1.newick"),
-#     output:
-#         figure = os.path.join(config["outdir"], "report","figures","{cluster}_tree.svg")
-#     shell:
-#         """
-#         make_trees.py --tree {input.tree} --output {output.figure}
-#         """
+rule cluster_catchment:
+    input:
+        tree = config["background_tree"],
+        query = rules.split_metadata.output.metadata
+    params:
+        outdir = os.path.join(config["clusterdir"],"{cluster}"),
+        cluster = "{cluster}"
+    output:
+        tree = os.path.join(config["clusterdir"],"{cluster}","{cluster}_subtree_1.newick")
+    shell:
+        """
+        jclusterfunk context \
+        -i "{input.tree}" \
+        -o "{params.outdir}" \
+        --mrca \
+        -f newick \
+        -p {params.cluster}_ \
+        -m "{input.query}" \
+        --id-column sequence_name
+        """
+
+rule make_tree_figure:
+    input:
+        tree= os.path.join(config["tempdir"], "cluster_civet","{cluster}_subtree_1.newick"),
+        config = os.path.join(config["config"])
+    output:
+        figure = os.path.join(config["outdir"], "report","figures","{cluster}_tree.svg")
+    shell:
+        """
+        make_trees.py --tree {input.tree} --config {input.config} --output {output.figure}
+        """
 
 rule gather_civet:
     input:
