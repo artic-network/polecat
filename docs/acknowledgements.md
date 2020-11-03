@@ -14,7 +14,7 @@
     JT McCrone         
     Verity Hill                
     Ben Jackson    
-    Andrew Rambaut      jclusterfunk 
+    Andrew Rambaut       
 ```
 
 ### Funding
@@ -35,7 +35,7 @@ European Research Council Consolidator Grant
 ```
 
 ### Acknowledgements
-```
+
 We acknowledge the hard work from all members of the 
 COG-UK consortium that has gone into generating the 
 data used by `polecat`.
@@ -46,6 +46,4 @@ that have made their genome data accessible on GISAID.
 A detailed table of acknowledgements for the SARS-CoV-2
 genome sequences used to build this lineage system is 
 hosted [here](https://github.com/cov-ert/clusterfunk))
-
-```
 
