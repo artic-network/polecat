@@ -5,8 +5,8 @@ today = config["today"]
 
 rule all:
     input:
-        expand(os.path.join(config["clusterdir"],"{cluster}","report","civet_{cluster}_"+f"{today}.md"), cluster= config["clusters"]),
-        os.path.join(config["outdir"],"polecat","report","figures","fig_prompt.txt")
+        expand(os.path.join(config["clusterdir"],"{cluster}","{cluster}_subtree_1.newick"), cluster=config["clusters"]),
+        os.path.join(config["tempdir"],"tree_prompt.txt")
 
 rule split_metadata:
     input:
@@ -14,7 +14,7 @@ rule split_metadata:
     params:
         cluster = "{cluster}"
     output:
-        metadata = os.path.join(config["clusterdir"],"{cluster}.metadata.csv")
+        metadata = os.path.join(config["clusterdir"],"{cluster}","{cluster}.metadata.csv")
     run:
         with open(output[0], "w") as fw:
             with open(input.filtered_metadata, "r") as f:
@@ -70,27 +70,12 @@ rule cluster_catchment:
         --id-column sequence_name
         """
 
-# rule make_tree_figure:
-#     input:
-#         tree= os.path.join(config["tempdir"], "cluster_civet","{cluster}_subtree_1.newick"),
-#         config = os.path.join(config["config"])
-#     output:
-#         figure = os.path.join(config["outdir"], "report","figures","{cluster}_tree.svg")
-#     shell:
-#         """
-#         make_trees.py --tree {input.tree} --config {input.config} --output {output.figure}
-#         """
-
 rule gather_civet:
     input:
         expand(os.path.join(config["clusterdir"],"{cluster}","{cluster}_subtree_1.newick"), cluster=config["clusters"])
-        # expand(os.path.join(config["clusterdir"],"{cluster}","report","civet_{cluster}_"+f"{today}.md"), cluster=config["clusters"])
-    params:
-        outdir = os.path.join(config["clusterdir"],"{cluster}"),
-        cluster = "{cluster}"
     output:
-        os.path.join(config["outdir"],"polecat","report","figures","fig_prompt.txt")
-    run:
+        os.path.join(config["tempdir"],"tree_prompt.txt")
+    shell:
         """
-        touch {output}
+        touch {output[0]}
         """

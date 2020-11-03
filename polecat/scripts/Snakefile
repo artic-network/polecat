@@ -15,9 +15,7 @@ if config.get("force"):
 ##### Target rules #####
 rule all:
     input:
-        os.path.join(config["outdir"],"report", f"{output_prefix}.html"),
-        os.path.join(config["outdir"],"tip_metadata.csv")
-
+        os.path.join(config["outdir"],"report", f"{output_prefix}.html")
 
 rule polecat_csv:
     input:
@@ -48,14 +46,12 @@ rule process_clusters:
         snakefile = os.path.join(workflow.current_basedir,"polecat_pipeline.smk"),
         background_metadata = config["background_metadata"],
         query = rules.polecat_csv.output.csv
-        # query = config["test"]
     threads: workflow.cores
     params:
         clusterdir = os.path.join(config["outdir"],"cluster_trees")
     output:
         filtered_metadata = os.path.join(config["outdir"],"tip_metadata.csv"),
-        yaml = os.path.join(config["tempdir"],"config.yaml"),
-        tree_prompt = os.path.join(config["outdir"],"polecat","report","figures","fig_prompt.txt")
+        yaml = os.path.join(config["tempdir"],"config.yaml")
     run:
         clusters = []
         tips_in_clusters = {}

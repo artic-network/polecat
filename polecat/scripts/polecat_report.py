@@ -79,7 +79,7 @@ def make_report():
     for cluster in cluster_info:
         c +=1 
         report_file.write(f"### {c}) Cluster {cluster}\n\n")
-        report_file.write(f"{cluster_header}\n")
+        report_file.write(f"{cluster_header}")
         for field in cluster_fields:
             row = cluster_info[cluster]
             data = row[field]
