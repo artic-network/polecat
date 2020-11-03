@@ -21,11 +21,11 @@ Full documentation can be found at https://cog-uk.github.io/polecat/
 <strong>Quick Links:</strong>
 
   * [Polecat clusters](https://rambaut.github.io/polecat/clusters.html)
-  * [Install and update polecat](./docs/installation.md)
-  * [Usage](./docs/usage.md)
-  * [Statistics options](./docs/statistics.md)
-  * [Background data](./docs/background_data.md)
-  * [Contributors & acknowledgements](./docs/acknowledgements.md)
+  * [Install and update polecat](https://cog-uk.github.io/polecat/installation.html)
+  * [Usage](https://cog-uk.github.io/polecat/usage.html)
+  * [Statistics options](https://cog-uk.github.io/polecat/statistics.html)
+  * [Background data](https://cog-uk.github.io/polecat/background_data.html)
+  * [Contributors & acknowledgements](https://cog-uk.github.io/polecat/acknowledgements.html)
 
 
 
