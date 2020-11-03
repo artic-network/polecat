@@ -3,6 +3,8 @@
 Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool
 
 
+<img src="./docs/doc_figures/polecat_logo.png" width=350>
+
 <strong>polecat</strong> is a tool developed with 'real-time' genomics in mind. 
 
 Using a background phylogeny, such as the large phylogeny available through the COG-UK infrastructure on CLIMB, <strong>polecat</strong> will identify and flag clusters based on various configurable statistics. 
@@ -23,7 +25,6 @@ A fully customisable report is generated, summarising information about the clus
 <strong>polecat</strong> was created by the Rambaut Group, Edinburgh University
 
 
-<img src="./docs/doc_figures/polecat_logo.png" width=350>
 
 
 ### Full usage
