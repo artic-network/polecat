@@ -12,21 +12,12 @@ output_prefix = config["output_prefix"]
 if config.get("force"):
     config["force"] = "--forceall "
 
-
-
 ##### Target rules #####
 rule all:
     input:
         os.path.join(config["outdir"],"report", f"{output_prefix}.html"),
         os.path.join(config["outdir"],"tip_metadata.csv")
 
-"""
-Output csv from jclusterfunk
-most_recent_tip,tip_count,admin0_count,admin1_count,admin2_count,tips
-2020-01-23,2,1,0,0,Hong_Kong/HKPU2_1801/2020|Hong_Kong/VB20017970-2/2020
-2020-01-25,2,1,0,0,Wuhan/0125-A137/2020|Wuhan/0125-A169/2020
-2020-01-25,2,1,0,0,Wuhan/0125-A160/2020|Wuhan/0125-A148/2020
-"""
 
 rule polecat_csv:
     input:
@@ -63,7 +54,8 @@ rule process_clusters:
         clusterdir = os.path.join(config["outdir"],"cluster_trees")
     output:
         filtered_metadata = os.path.join(config["outdir"],"tip_metadata.csv"),
-        yaml = os.path.join(config["tempdir"],"config.yaml")
+        yaml = os.path.join(config["tempdir"],"config.yaml"),
+        tree_prompt = os.path.join(config["outdir"],"polecat","report","figures","fig_prompt.txt")
     run:
         clusters = []
         tips_in_clusters = {}

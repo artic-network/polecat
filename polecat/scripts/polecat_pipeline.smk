@@ -70,21 +70,21 @@ rule cluster_catchment:
         --id-column sequence_name
         """
 
-rule make_tree_figure:
-    input:
-        tree= os.path.join(config["tempdir"], "cluster_civet","{cluster}_subtree_1.newick"),
-        config = os.path.join(config["config"])
-    output:
-        figure = os.path.join(config["outdir"], "report","figures","{cluster}_tree.svg")
-    shell:
-        """
-        make_trees.py --tree {input.tree} --config {input.config} --output {output.figure}
-        """
+# rule make_tree_figure:
+#     input:
+#         tree= os.path.join(config["tempdir"], "cluster_civet","{cluster}_subtree_1.newick"),
+#         config = os.path.join(config["config"])
+#     output:
+#         figure = os.path.join(config["outdir"], "report","figures","{cluster}_tree.svg")
+#     shell:
+#         """
+#         make_trees.py --tree {input.tree} --config {input.config} --output {output.figure}
+#         """
 
 rule gather_civet:
     input:
-        # expand(os.path.join(config["clusterdir"],"{cluster}","{cluster}_subtree_1.newick"), cluster=config["clusters"])
-        expand(os.path.join(config["clusterdir"],"{cluster}","report","civet_{cluster}_"+f"{today}.md"), cluster=config["clusters"])
+        expand(os.path.join(config["clusterdir"],"{cluster}","{cluster}_subtree_1.newick"), cluster=config["clusters"])
+        # expand(os.path.join(config["clusterdir"],"{cluster}","report","civet_{cluster}_"+f"{today}.md"), cluster=config["clusters"])
     params:
         outdir = os.path.join(config["clusterdir"],"{cluster}"),
         cluster = "{cluster}"

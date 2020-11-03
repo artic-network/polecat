@@ -173,11 +173,6 @@ def make_cluster_tree(My_Tree, tree_name, num_tips, taxon_dict, outfile,config):
                     if x != max_x:
                         ax.plot([x+space_offset,tallest_height],[y,y],ls='--',lw=1,color=l_func(k))
 
-                #This section adds a line in between each trait in the tree
-                # for blob_x in blob_dict.values():
-                #     line_x = blob_x - (division/2)
-                #     ax.plot([line_x,line_x],[min_y,max_y],ls='--',lw=3,color=l_func(k))
-            
             
             else:
                 ax.text(text_start, y, name, size=font_size_func(k), ha="left", va="center", fontweight="ultralight")
