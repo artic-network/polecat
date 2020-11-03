@@ -1,7 +1,7 @@
 theme: jekyll-theme-minimal
 
 title: polecat
-logo: /doc_figures/polecat_logo.png
+logo: ./doc_figures/polecat_logo.png
 header_pages:
     - index.md
     - installation.md
