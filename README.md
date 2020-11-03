@@ -14,6 +14,13 @@ A fully customisable report is generated, summarising information about the clus
 
 
 ### polecat documentation
+
+Full documentation can be found at https://cog-uk.github.io/polecat/
+
+
+<strong>Quick Links:</strong>
+
+  * [Polecat clusters](https://rambaut.github.io/polecat/clusters.html)
   * [Install and update polecat](./docs/installation.md)
   * [Usage](./docs/usage.md)
   * [Statistics options](./docs/statistics.md)

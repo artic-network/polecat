@@ -11,6 +11,7 @@ A fully customisable report is generated, summarising information about the clus
 
 
 ### polecat documentation
+  * [Polecat clusters](https://rambaut.github.io/polecat/clusters.html)
   * [Install and update polecat](./installation.md)
   * [Usage](./usage.md)
   * [Statistics options](./statistics.md)
