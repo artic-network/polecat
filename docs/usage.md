@@ -1,33 +1,29 @@
-# polecat
-
-Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool
+![](./doc_figures/website_header.png)
 
 
-<strong>polecat</strong> is a tool developed with 'real-time' genomics in mind. 
-
-Using a background phylogeny, such as the large phylogeny available through the COG-UK infrastructure on CLIMB, <strong>polecat</strong> will identify and flag clusters based on various configurable statistics. 
+# Usage
 
 
-A fully customisable report is generated, summarising information about the clusters of interest.
+### Running polecat
+
+1. Activate the environment ``conda activate polecat``
 
 
-### polecat documentation
-  * [Install and update polecat](./docs/installation.md)
-  * [Usage](./docs/usage.md)
-  * [Statistics options](./docs/statistics.md)
-  * [Background data](./docs/background_data.md)
-  * [Contributors & acknowledgements](./docs/acknowledgements.md)
+2. To run a simple analysis, you can input your prefered options via the command line. Run:
 
+```
+polecat --CLIMB -uun <your-user-name> --outdir test_polecat --rank-by ^location-entropy --threads 1
+```
+where `<your-user-name>` represents your unique CLIMB identifier.
 
+3. If you're going to be running a similar analysis again and again, a configuration file simplifies the process. T
 
-<strong>polecat</strong> was created by the Rambaut Group, Edinburgh University
-
-
-<img src="./docs/doc_figures/polecat_logo.png" width=350>
-
+Running polecat is then simple:
+```
+polecat -i config.yaml
+```
 
 ### Full usage
-
 ```
 usage: polecat -i <config.yaml> [options]
 
@@ -103,5 +99,7 @@ misc options:
   --verbose             Print lots of stuff to screen
   --threads THREADS     Number of threads
   -v, --version         show program's version number and exit
+
 ```
-<img src="./docs/doc_figures/website_header.png">
+
+### [Next: Statistics](./statistics.md)

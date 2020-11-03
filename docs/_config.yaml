@@ -1,0 +1,11 @@
+theme: jekyll-theme-minimal
+
+title: polecat
+logo: /doc_figures/polecat_logo.png
+header_pages:
+    - index.md
+    - installation.md
+    - usage.md
+    - statistics.md
+    - background_data.md
+    - acknowledgements.md

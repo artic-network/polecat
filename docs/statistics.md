@@ -1,3 +1,9 @@
+
+![](./doc_figures/website_header.png)
+
+
+# Statistics description
+
 `node_number`
 > a number to denote this node
 
@@ -84,3 +90,4 @@
 
 `tips`
 > a list of IDs of tips in this cluster
+
