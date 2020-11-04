@@ -40,7 +40,7 @@ def get_defaults():
                     "data_column":"sequence_name",
                     "output_prefix":"polecat",
                     "summary_fields":"node_number,most_recent_tip,tip_count,admin0_count,admin1_count",
-                    "cluster_fields":"node_number,day_range,tip_count,uk_tip_count,uk_chain_count,identical_count,haplotype",
+                    "cluster_fields":"node_number,day_range,tip_count,uk_tip_count,uk_chain_count,identical_count",
                     "no_temp":False,
                     "force":True,
                     "launch_browser":False,
