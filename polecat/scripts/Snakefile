@@ -4,6 +4,7 @@ import csv
 from Bio import SeqIO
 import os
 import yaml
+import collections
 
 
 output_prefix = config["output_prefix"]
