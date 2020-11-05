@@ -53,16 +53,16 @@ rule process_clusters:
         filtered_metadata = os.path.join(config["outdir"],"tip_metadata.csv"),
         yaml = os.path.join(config["tempdir"],"config.yaml")
     run:
-        clusters = []
-        tips_in_clusters = {}
+        clusters = collections.defaultdict(list)
+
         with open(input.query, "r") as f:
             reader = csv.DictReader(f)
             
             for row in reader:
-                clusters.append(row["node_number"])
+                
                 tips = row["tips"].split("|")
                 for tip in tips:
-                    tips_in_clusters[tip] = row["node_number"]
+                    clusters[row["node_number"]].append(tip)
 
         with open(output.filtered_metadata, "w") as fw:
 
@@ -74,11 +74,17 @@ rule process_clusters:
                 writer = csv.DictWriter(fw, fieldnames=header,lineterminator='\n')
                 writer.writeheader()
                 for row in reader:
-                    if row["sequence_name"] in tips_in_clusters:
-                        new_row = row
-                        new_row["cluster"] = tips_in_clusters[row["sequence_name"]]
+                    new_row = row
+                    c_list = []
+                    for c in clusters:
+                        tips = clusters[c]
+                        
+                        if row["sequence_name"] in tips:
+                            c_list.append(c)
+                    c_string = "|".join(c_list)
+                    new_row["cluster"] = c_string
 
-                        writer.writerow(new_row)
+                    writer.writerow(new_row)
         
         config["clusters"] = clusters
         config["clusterdir"] = params.clusterdir

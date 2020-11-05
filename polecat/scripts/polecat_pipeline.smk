@@ -25,7 +25,8 @@ rule split_metadata:
                 writer.writeheader()
 
                 for row in reader:
-                    if row["cluster"] == params.cluster:
+                    c_list = row["cluster"].split("|")
+                    if params.cluster in c_list:
                         writer.writerow(row)
 
 # rule run_civet:
