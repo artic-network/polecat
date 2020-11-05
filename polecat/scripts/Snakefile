@@ -86,15 +86,17 @@ rule process_clusters:
 
         with open(output.yaml, 'w') as fw:
             yaml.dump(config, fw)
-        
-        shell("snakemake --nolock --snakefile {input.snakefile:q} "
-                            "{config[force]} "
-                            "{config[log_string]} "
-                            "--directory {config[tempdir]:q} "
-                            "--configfile {output.yaml:q} "
-                            "--config "
-                            "filtered_metadata={output.filtered_metadata:q} "
-                            "--cores {workflow.cores}")
+        if clusters:
+            shell("snakemake --nolock --snakefile {input.snakefile:q} "
+                                "{config[force]} "
+                                "{config[log_string]} "
+                                "--directory {config[tempdir]:q} "
+                                "--configfile {output.yaml:q} "
+                                "--config "
+                                "filtered_metadata={output.filtered_metadata:q} "
+                                "--cores {workflow.cores}")
+        else:
+            pass
 
 rule make_report:
     input:
