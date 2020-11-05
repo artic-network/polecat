@@ -18,10 +18,10 @@ from reportfunk.funks import tree_functions as tree_funk
 def get_defaults():
     default_dict = {"threads":1,
                     "max_age":"",
-                    "max_count":5,
+                    "max_count":"",
                     "max_recency":"",
                     "max_size":"",
-                    "min_size":5,
+                    "min_size":"",
                     "min_UK":"",
                     "optimize_by":"",
                     "rank_by":"growth-rate",
@@ -112,6 +112,8 @@ def qc_cluster_arg(key,arg,type_var,config):
         except:
             sys.stderr.write(qcfunk.cyan(f"Error: {arg} must be {type_var}\n"))
             sys.exit(-1)
+    else:
+        config[key] = ""
 
 def cluster_group_to_config(args,config):
     ## max_age
