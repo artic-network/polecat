@@ -16,17 +16,10 @@ import csv
 import numpy as np
 import scipy as sp
 
-from dateutil.relativedelta import relativedelta, FR
 import datetime as dt
 
-from reportfunk.funks import time_functions as time_func
 from reportfunk.funks import io_functions as qcfunk
 
-from reportfunk.funks import prep_data_functions as prep_data
-from reportfunk.funks import tree_functions as tree_viz
-from reportfunk.funks import parsing_functions as dp
-from reportfunk.funks import table_functions as table_func
-import polecatfunks as pfunk
 
 thisdir = os.path.abspath(os.path.dirname(__file__))
 
