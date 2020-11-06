@@ -22,6 +22,8 @@ def get_defaults():
                     "max_recency":"",
                     "max_size":"",
                     "min_size":"",
+                    "stats":"node_number,day_range,growth_rate,tip_count,lineage,uk_lineage",
+                    "command":"",
                     "min_UK":"",
                     "optimize_by":"",
                     "rank_by":"growth-rate",
@@ -177,24 +179,20 @@ def report_group_to_config(args,config):
     # ## node-summary
     # qcfunk.add_arg_to_config("node_summary",args.node_summary, config)
 
+def get_stat_list():
+    return "node_number,parent_number,most_recent_tip,least_recent_tip,day_range,persistence,recency,age,tip_count,uk_tip_count,uk_child_count,uk_chain_count,identical_count,divergence_ratio,mean_tip_divergence,stem_length,growth_rate,lineage,uk_lineage,proportion_uk,admin0_count,admin1_count,admin2_count,admin0_mode,admin1_mode,admin2_mode,admin1_entropy,admin2_entropy,tips".split(",")
 
-def check_metadata_for_report_fields(config):
-    pass
-    # cluster_fields = config["cluster_fields"].split(",")
-    # data_column = config["data_column"]
-    # with open(config["background_metadata"], "r") as f:
-    #     reader = csv.DictReader(f)
-    #     header = reader.fieldnames
-    #     if data_column not in header:
-    #         sys.stderr.write(qcfunk.cyan(f'Error: {data_column} not found in background metadata file\n'))
-    #         sys.exit(-1)
-    #     if "adm2" not in header:
-    #         sys.stderr.write(qcfunk.cyan(f'Error: adm2 required to run polecat. Please run from CLIMB or supply adm2\n'))
-    #         sys.exit(-1)
-    #     for field in cluster_fields:
-    #         if field not in header:
-    #             sys.stderr.write(qcfunk.cyan(f'Error: {field} not found in background metadata file\n'))
-    #             sys.exit(-1)
+def check_metadata_for_stat_fields(config):
+
+    stat_list = get_stat_list()
+
+    show_stats = config["stats"].split(",")
+
+    for stat in show_stats:
+        if stat not in stat_list:
+            sys.stderr.write(qcfunk.cyan(f'Error: {stat} not a valid polecat statistic\n'))
+            sys.exit(-1)
+
 
 def print_data_error(data_dir):
     sys.stderr.write(qcfunk.cyan(f"Error: data directory should contain the following files or additionally supply a background metadata file:\n") + f"\
