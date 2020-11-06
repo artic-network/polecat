@@ -7,10 +7,6 @@ import pkg_resources
 
 from polecat import __version__, _program
 
-class NPMInstall(build_py):
-    def run(self):
-        self.run_command('npm install -g vega-lite --ignore-scripts')
-        build_py.run(self)
 
 setup(name='polecat',
       version=__version__,
@@ -22,12 +18,8 @@ setup(name='polecat',
       package_data={"polecat":["data/*"]},
       install_requires=[
             "biopython>=1.70",
-            "grip>=4.5.2",
             "mako>=1.1.3"
         ],
-      cmdclass={
-        'npm_install': NPMInstall
-      },
       description='',
       url='https://github.com/COG-UK/polecat',
       author='Aine OToole, Verity Hill, JT McCrone, Andrew Rambaut',

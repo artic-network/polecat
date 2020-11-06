@@ -131,7 +131,7 @@ def main(sysargs = sys.argv[1:]):
     template = pkg_resources.resource_filename('polecat', 'data/html_template.mako')
     command = " ".join(sys.argv[1:])
     config["command"] = f"polecat {command}"
-    print(config["command"])
+
     config["template"] = template
     qcfunk.add_arg_to_config("stats",args.stats, config)
     
