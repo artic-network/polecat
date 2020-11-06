@@ -55,15 +55,7 @@ def main(sysargs = sys.argv[1:]):
     cluster_group.add_argument('--rank-by', action="store",help="Statistic to rank clusters by. Default: rate", dest="rank_by")
 
     report_group = parser.add_argument_group('report options')
-    report_group.add_argument('--summary-fields', action="store",help="Comma-separated string of which statistics to include in the report. Default: node_name,most_recent_tip,tip_count,admin0_count,admin1_count", dest="summary_fields")
-    report_group.add_argument('--cluster-fields', action="store",help="Comma-separated string of which columns to include in the cluster tables. Default: sequence_name,lineage,country", dest="cluster_fields")
-    # report_group.add_argument("--display-name", action="store", help="Column in input csv file with display names for seqs. Default: same as input column", dest="display_name")
-    # report_group.add_argument('--colour-by', action="store", help="Comma separated string of fields to display as coloured dots rather than text in report trees. Optionally add colour scheme eg adm1=viridis", dest="colour_by")
-    # report_group.add_argument('--tree-fields', action="store",help="Comma separated string of fields to display in the trees in the report. Default: country", dest="tree_fields")
-    # report_group.add_argument('--label-fields', action="store", help="Comma separated string of fields to add to tree report labels.", dest="label_fields")
-    # report_group.add_argument("--date-fields", action="store", help="Comma separated string of metadata headers containing date information.", dest="date_fields")
-    # report_group.add_argument("--node-summary", action="store", help="Column to summarise collapsed nodes by. Default = Global lineage", dest="node_summary")
-    # report_group.add_argument("--table-fields", action="store", help="Fields to include in the table produced in the report. Query ID, name of sequence in tree and the local tree it's found in will always be shown", dest="table_fields")
+    report_group.add_argument('--stats', action="store",help="Comma-separated string of which columns to include in the cluster tables. Default: sequence_name,lineage,country", dest="stats")
 
     misc_group = parser.add_argument_group('misc options')
     misc_group.add_argument('-b','--launch-browser', action="store_true",help="Optionally launch md viewer in the browser using grip",dest="launch_browser")
@@ -136,11 +128,15 @@ def main(sysargs = sys.argv[1:]):
     Parsing the report_group arguments, 
     config options
     """
-
-    pfunk.report_group_to_config(args,config)
+    template = pkg_resources.resource_filename('polecat', 'data/html_template.mako')
+    command = " ".join(sys.argv[1:])
+    config["command"] = f"polecat {command}"
+    print(config["command"])
+    config["template"] = template
+    qcfunk.add_arg_to_config("stats",args.stats, config)
     
     # check if metadata has the right columns, background_metadata_header added to config
-    pfunk.check_metadata_for_report_fields(config)
+    pfunk.check_metadata_for_stat_fields(config)
 
     """
     Miscellaneous options parsing
