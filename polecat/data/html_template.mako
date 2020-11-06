@@ -157,7 +157,7 @@
         </tr>
         % for row in summary_data:
             <tr>
-              <td>${row["cluster_no"]}</td>
+              <td><a href="#${row['cluster_no']}">${row["cluster_no"]}</a></td>
               <td>${row["most_recent_tip"]}</td>
               <td>${row["tip_count"]}</td>
               <td>${row["admin0_count"]}</td>
@@ -169,7 +169,7 @@
 
         
         % for cluster in cluster_data:
-          <h2>Cluster ${cluster['cluster_no']}</h2>
+          <h2><a id = "${cluster['cluster_no']}"></a>Cluster ${cluster['cluster_no']}</h2>
           <h3><strong>Table ${cluster['table_no']}</strong> | Cluster ${cluster['cluster_no']}</h3>
           <table class="table table-striped">
               <tr class="header">
