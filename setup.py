@@ -17,13 +17,13 @@ setup(name='polecat',
       packages=find_packages(),
       scripts=["polecat/scripts/Snakefile",
       "polecat/scripts/polecat_pipeline.smk",
-      "polecat/scripts/polecat_report.py",
-      "polecat/scripts/make_trees.py",
+      "polecat/scripts/render_report.py",
       "polecat/scripts/polecatfunks.py"],
-      # package_data={"polecat":["data/*"]},
+      package_data={"polecat":["data/*"]},
       install_requires=[
             "biopython>=1.70",
-            "grip>=4.5.2"
+            "grip>=4.5.2",
+            "mako>=1.1.3"
         ],
       cmdclass={
         'npm_install': NPMInstall
