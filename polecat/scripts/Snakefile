@@ -108,30 +108,20 @@ rule process_clusters:
 rule make_report:
     input:
         rules.process_clusters.output.filtered_metadata,
-        query = rules.polecat_csv.output.csv
+        csv = rules.polecat_csv.output.csv,
+        template = config["template"]
+    params:
+        clusterdir = os.path.join(config["outdir"],"cluster_trees")
     output:
-        report = os.path.join(config["outdir"],"report", f"{output_prefix}.md"),
-        yaml = os.path.join(config["tempdir"],"report_config.yaml")
-    run:
-        config["all_clusters"] = input.query 
-        config["config"] = output.yaml
+        report = os.path.join(config["outdir"],"report", f"{output_prefix}.html")
+    shell:
+        """
+        render_report.py \
+        --metadata {input.csv:q} \
+        --template {input.template:q} \
+        --report {output.report:q} \
+        --include-stats {config[stats]} \
+        --command {config[command]:q} \
+        --tree-dir {params.clusterdir:q}
+        """
 
-        with open(output.yaml, 'w') as fw:
-            yaml.dump(config, fw)
-            
-        shell("polecat_report.py --config {output.yaml} --report {output.report}")
-
-rule launch_grip:
-    input:
-        mdfile = os.path.join(config["outdir"],"report", f"{output_prefix}.md")
-    output:
-        out_file = os.path.join(config["outdir"],"report",f"{output_prefix}.html")
-    run:
-        shell("grip {input.mdfile:q} --export")
-        if config["launch_browser"]:
-            for i in range(8000, 8100):
-                try:
-                    shell("grip {input.mdfile:q} -b {i}")
-                    break
-                except:
-                    print("Trying next port")
