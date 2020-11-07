@@ -20,10 +20,10 @@
     <style>
     body {
       padding-top: 50px;
-      font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+      font-family: "ArialNova-Light","HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     }
     table text{
-        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+        font-family: "ArialNova-Light","HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
     }
     header {
         display: block;
@@ -157,7 +157,7 @@
         </tr>
         % for row in summary_data:
             <tr>
-              <td><a href="#${row['cluster_no']}">${row["cluster_no"]}</a></td>
+              <td><a href="#${row['cluster_no']}" style="color:#86b0a6">${row["cluster_no"]}</a></td>
               <td>${row["most_recent_tip"]}</td>
               <td>${row["tip_count"]}</td>
               <td>${row["admin0_count"]}</td>
@@ -192,6 +192,27 @@
 
         % endfor
 
+        <script>
+          function myFunction(myInput, myTable) {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById(myInput);
+            filter = input.value.toUpperCase();
+            table = document.getElementById(myTable);
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+              td = tr[i].getElementsByTagName("td")[0];
+              if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                  tr[i].style.display = "";
+                } else {
+                  tr[i].style.display = "none";
+                }
+              }       
+            }
+          }
+          </script>
+          
     <footer>
         <!-- <img src=https://raw.githubusercontent.com/COG-UK/polecat/master/docs/doc_figures/polecat_logo.svg vertical-align="middle" width="100" height="100" style="float:right;"></img> -->
         <hr>
