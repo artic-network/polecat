@@ -29,27 +29,6 @@ rule split_metadata:
                     if params.cluster in c_list:
                         writer.writerow(row)
 
-# rule run_civet:
-#     input:
-#         query = rules.split_metadata.output.metadata
-#     params:
-#         outdir = os.path.join(config["clusterdir"],"{cluster}"),
-#         cluster = "civet_{cluster}"
-#     output:
-#         os.path.join(config["clusterdir"],"{cluster}","report","civet_{cluster}_"+f"{today}.md")
-#     shell:
-#         # "touch {output}"
-#         """
-#         civet -i {input.query:q} \
-#             -o {params.cluster} \
-#             --up-distance 2  \
-#             --down-distance 100 \
-#             --outdir {params.outdir} \
-#             --input-column sequence_name \
-#             --data-column sequence_name \
-#             -d {config[datadir]}
-#         """
-
 rule cluster_catchment:
     input:
         tree = config["background_tree"],

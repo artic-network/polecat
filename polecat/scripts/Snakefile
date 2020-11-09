@@ -55,7 +55,7 @@ rule process_clusters:
         yaml = os.path.join(config["tempdir"],"config.yaml")
     run:
         clusters = collections.defaultdict(list)
-
+        all_tips = []
         with open(input.query, "r") as f:
             reader = csv.DictReader(f)
             
@@ -64,6 +64,7 @@ rule process_clusters:
                 tips = row["tips"].split("|")
                 for tip in tips:
                     clusters[row["node_number"]].append(tip)
+                    all_tips.append(tip)
 
         with open(output.filtered_metadata, "w") as fw:
 
@@ -75,17 +76,19 @@ rule process_clusters:
                 writer = csv.DictWriter(fw, fieldnames=header,lineterminator='\n')
                 writer.writeheader()
                 for row in reader:
-                    new_row = row
-                    c_list = []
-                    for c in clusters:
-                        tips = clusters[c]
-                        
-                        if row["sequence_name"] in tips:
-                            c_list.append(c)
-                    c_string = "|".join(c_list)
-                    new_row["cluster"] = c_string
+                    if row["sequence_name"] in all_tips:
 
-                    writer.writerow(new_row)
+                        new_row = row
+                        c_list = []
+                        for c in clusters:
+                            tips = clusters[c]
+                            
+                            if row["sequence_name"] in tips:
+                                c_list.append(c)
+                        c_string = "|".join(c_list)
+                        new_row["cluster"] = c_string
+
+                        writer.writerow(new_row)
         
         config["clusters"] = clusters
         config["clusterdir"] = params.clusterdir
@@ -107,7 +110,7 @@ rule process_clusters:
 
 rule make_report:
     input:
-        rules.process_clusters.output.filtered_metadata,
+        metadata = rules.process_clusters.output.filtered_metadata,
         csv = rules.polecat_csv.output.csv,
         template = config["template"]
     params:
@@ -122,6 +125,8 @@ rule make_report:
         --report {output.report:q} \
         --include-stats {config[stats]} \
         --command {config[command]:q} \
+        --background-metadata {input.metadata:q} \
+        --background-fields {config[background_fields]} \
         --tree-dir {params.clusterdir:q}
         """
 

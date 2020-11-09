@@ -23,6 +23,7 @@ def get_defaults():
                     "max_size":"",
                     "min_size":"",
                     "stats":"node_number,day_range,growth_rate,tip_count,lineage,uk_lineage",
+                    "background_fields":"sequence_name,sample_date,epi_week,country,adm2,uk_lineage,lineage,phylotype",
                     "command":"",
                     "min_UK":"",
                     "optimize_by":"",
@@ -192,6 +193,24 @@ def check_metadata_for_stat_fields(config):
         if stat not in stat_list:
             sys.stderr.write(qcfunk.cyan(f'Error: {stat} not a valid polecat statistic\n'))
             sys.exit(-1)
+
+def check_metadata_for_background_fields(config):
+
+    with open(config["background_metadata"],"r") as f:
+        reader = csv.DictReader(f)
+        header = reader.fieldnames
+
+
+        background_fields = config["background_fields"].split(",")
+
+        if "sequence_name" not in header:
+            sys.stderr.write(qcfunk.cyan(f'Error: "sequence_name" is a required field in background metadata\n'))
+            sys.exit(-1)
+
+        for field in background_fields:
+            if field not in header:
+                sys.stderr.write(qcfunk.cyan(f'Error: {field} not present in background metadata\n'))
+                sys.exit(-1)
 
 
 def print_data_error(data_dir):

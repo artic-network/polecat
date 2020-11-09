@@ -56,6 +56,7 @@ def main(sysargs = sys.argv[1:]):
 
     report_group = parser.add_argument_group('report options')
     report_group.add_argument('--stats', action="store",help="Comma-separated string of which columns to include in the cluster tables. Default: sequence_name,lineage,country", dest="stats")
+    report_group.add_argument("--background-fields",help="Comma-separated string of to include in metadata tooltips",dest="background_fields")
 
     misc_group = parser.add_argument_group('misc options')
     misc_group.add_argument('-b','--launch-browser', action="store_true",help="Optionally launch md viewer in the browser using grip",dest="launch_browser")
@@ -134,9 +135,11 @@ def main(sysargs = sys.argv[1:]):
 
     config["template"] = template
     qcfunk.add_arg_to_config("stats",args.stats, config)
-    
+    qcfunk.add_arg_to_config("background_fields",args.background_fields, config)
+
     # check if metadata has the right columns, background_metadata_header added to config
     pfunk.check_metadata_for_stat_fields(config)
+    pfunk.check_metadata_for_background_fields(config)
 
     """
     Miscellaneous options parsing
