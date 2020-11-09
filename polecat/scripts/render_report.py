@@ -8,7 +8,7 @@ from datetime import date
 from mako.template import Template
 from mako.runtime import Context
 from io import StringIO
-
+import json
 
 import csv
 
@@ -49,7 +49,8 @@ def make_background_metadata(background_metadata,background_fields):
             for field in background_fields:
                 cluster_dict[field] = row[field]
             background_data[row["sequence_name"]] = cluster_dict
-    return background_data
+    data = json.dumps(background_data) 
+    return data
 
 def make_cluster_data(metadata,include_stats,tree_dir):
     cluster_data = []

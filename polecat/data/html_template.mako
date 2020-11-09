@@ -194,7 +194,7 @@
             <div class="col-xs-4",id="tooltip_${cluster['cluster_no']}" >
           </div>
           <script type="text/javascript">
-            buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}","tooltip_${cluster['cluster_no']}","${background_data}");
+            buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}","tooltip_${cluster['cluster_no']}",'${background_data}');
             </script>
         </div>
         
