@@ -89,40 +89,97 @@
     h3{
         font-size: 1em;
     }
+
+    #toTopBtn {
+    position: fixed;
+    bottom: 26px;
+    right: 39px;
+    z-index: 98;
+    padding: 21px;
+    background-color: #86b0a6
+    }
+    .js .cd-top--fade-out {
+        opacity: .5
+    }
+    .js .cd-top--is-visible {
+        visibility: visible;
+        opacity: 1
+    }
+
+    .js .cd-top {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity .3s, visibility .3s, background-color .3s
+    }
+
+    .cd-top {
+        position: fixed;
+        bottom: 20px;
+        bottom: var(--cd-back-to-top-margin);
+        right: 20px;
+        right: var(--cd-back-to-top-margin);
+        display: inline-block;
+        height: 40px;
+        height: var(--cd-back-to-top-size);
+        width: 40px;
+        width: var(--cd-back-to-top-size);
+        box-shadow: 0 0 10px rgba(0, 0, 0, .05) !important;
+        background: url(https://res.cloudinary.com/dxfq3iotg/image/upload/v1571057658/cd-top-arrow.svg) no-repeat center 50%;
+        background-color:#86b0a6;
+        background-color: hsla(var(--cd-color-3-h), var(--cd-color-3-s), var(--cd-color-3-l), 0.8)
+    }
     </style>
 
   </head>
 
   <body>
-
-    <script type="text/javascript">
-        function buildTree(svgID, myTreeString,tooltipID,backgroundData) {
-            const margins = {top:50,bottom:60,left:100,right:250}
-            const svg = d3.select(document.getElementById(svgID))
-            svg.selectAll("g").remove();
-
-            const newickString = myTreeString;
-            const tree = figtree.Tree.parseNewick(newickString);
-            const fig = new figtree.FigTree(document.getElementById(svgID),margins, tree)
-            fig.layout(figtree.rectangularLayout)
-                          .nodes(figtree.circle()
-                                  .attr("r",8)
-                                  .hilightOnHover(20)
-                                  .attr("stroke","dimgrey"),
-                                figtree.tipLabel(v=>v.name)
-                                  )
-                          .nodeBackgrounds(figtree.circle()
-                                            .attr("r", 10)
-                                            .attr("fill","dimgrey")
-                                            
-                                            
-                                          )
-                          .branches(figtree.branch()
-                                      .hilightOnHover(20) 
-                                      .collapseOnClick()
-                              )
+    <script>
+      $(document).ready(function() {
+        $(window).scroll(function() {
+        if ($(this).scrollTop() > 20) {
+        $('#toTopBtn').fadeIn();
+        } else {
+        $('#toTopBtn').fadeOut();
         }
-    </script>
+        });
+        
+        $('#toTopBtn').click(function() {
+        $("html, body").animate({
+        scrollTop: 0
+        }, 400);
+        return false;
+        });
+        });
+      </script>
+
+      <script type="text/javascript">
+          function buildTree(svgID, myTreeString,tooltipID,backgroundData) {
+              const margins = {top:50,bottom:60,left:100,right:250}
+              const svg = d3.select(document.getElementById(svgID))
+              svg.selectAll("g").remove();
+
+              const newickString = myTreeString;
+              const tree = figtree.Tree.parseNewick(newickString);
+              const fig = new figtree.FigTree(document.getElementById(svgID),margins, tree)
+              fig.layout(figtree.rectangularLayout)
+                            .nodes(figtree.circle()
+                                    .attr("r",8)
+                                    .hilightOnHover(20)
+                                    .attr("stroke","dimgrey"),
+                                  figtree.tipLabel(v=>v.name)
+                                    )
+                            .nodeBackgrounds(figtree.circle()
+                                              .attr("r", 10)
+                                              .attr("fill","dimgrey")
+                                              
+                                              
+                                            )
+                            .branches(figtree.branch()
+                                        .hilightOnHover(20) 
+                                        .collapseOnClick()
+                                )
+          }
+      </script>
 
     <div class="container">
       
@@ -191,7 +248,7 @@
           <div class="col-xs-8">
             <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
             </div>
-            <div class="col-xs-4",id="tooltip_${cluster['cluster_no']}" >
+            <div class="col-xs-4" id="tooltip_${cluster['cluster_no']}" >
           </div>
           <script type="text/javascript">
             buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}","tooltip_${cluster['cluster_no']}",'${background_data}');
