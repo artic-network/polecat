@@ -10,12 +10,14 @@
     <link rel="icon" href="https://raw.githubusercontent.com/COG-UK/polecat/master/docs/doc_figures/polecat_logo.svg">
 
     <title>polecat report</title>
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/gh/rambaut/figtree.js@b0f726d/dist/figtree.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/rambaut/figtree.js@c0b3708/dist/figtree.umd.js"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
     body {
@@ -93,10 +95,8 @@
 
   <body>
 
-    </script>
-    
     <script type="text/javascript">
-        function buildTree(svgID, myTreeString) {
+        function buildTree(svgID, myTreeString,tooltipID,backgroundData) {
             const margins = {top:50,bottom:60,left:100,right:250}
             const svg = d3.select(document.getElementById(svgID))
             svg.selectAll("g").remove();
@@ -125,8 +125,8 @@
     </script>
 
     <div class="container">
-
-      <div class="starter-template">
+      
+      <div class="page-header">
         <header>
             polecat | 
             <small class="text-muted">Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool</small>
@@ -136,7 +136,8 @@
             <small class="text-muted">${date}</small>
         </h1>
         <br>
-        <p>
+        </div>
+        <p>        
         <strong>Command</strong>
         <pre> ${command} </pre>
         </p>
@@ -185,10 +186,18 @@
             </table>
 
         <br>
-        <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
-        <script type="text/javascript">
-        buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}");
-        </script>
+        <div class="row">
+    
+          <div class="col-xs-8">
+            <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
+            </div>
+            <div class="col-xs-4",id="tooltip_${cluster['cluster_no']}" >
+          </div>
+          <script type="text/javascript">
+            buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}","tooltip_${cluster['cluster_no']}","${background_data}");
+            </script>
+        </div>
+        
 
         % endfor
 
@@ -212,17 +221,22 @@
             }
           }
           </script>
-          
-    <footer>
-        <!-- <img src=https://raw.githubusercontent.com/COG-UK/polecat/master/docs/doc_figures/polecat_logo.svg vertical-align="middle" width="100" height="100" style="float:right;"></img> -->
+    <footer class="page-footer">
+      <div class="container-fluid text-right text-md-right">
         <hr>
-        <p>
-        <span style="float:left;">Rambaut Lab, University of Edinburgh, 2020<br><small class="text-muted">GNU General Public License v3.0</small></span>
-        <span style="float:right;"> polecat ${version} | <small class="text-muted">Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool</small> </span>
+        <div class="row">
+          <div class="col-sm-1">
+            <p>
+            <img src=https://raw.githubusercontent.com/COG-UK/polecat/master/docs/doc_figures/polecat_logo.svg vertical-align="left" width="50" height="50"></img>
+            <p>
+        </div>
+
+      <div class="col-sm-11" style="text-align: right;">
+        polecat ${version} | <small class="text-muted">Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool</small> <br><small class="text-muted">GNU General Public License v3.0</small></div>
 
         <br><br>
         </p>
-
+      </div>
     </footer>
     </div>
     
