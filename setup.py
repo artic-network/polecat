@@ -22,7 +22,7 @@ setup(name='polecat',
         ],
       description='',
       url='https://github.com/COG-UK/polecat',
-      author='Aine OToole, Verity Hill, JT McCrone, Andrew Rambaut',
+      author='Aine OToole, JT McCrone, Verity Hill, Andrew Rambaut',
       author_email='aine.otoole@ed.ac.uk',
       entry_points="""
       [console_scripts]
