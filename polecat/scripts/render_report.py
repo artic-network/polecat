@@ -17,7 +17,9 @@ import csv
 def parse_args():
     parser = argparse.ArgumentParser(description="Report generator script")
     parser.add_argument("--metadata", required=True, help="metadata file", dest="metadata")
+    parser.add_argument("--background-metadata", required=True, help="background metadata file", dest="background_metadata")
     parser.add_argument("--command",help="command string", dest="command")
+    parser.add_argument("--background-fields",help="stats to include in metadata tooltips",dest="background_fields")
     parser.add_argument("--include-stats",help="stats to include in detailed table",dest="include_stats")
     parser.add_argument("--template",help="template mako html",dest="template")
     parser.add_argument("--report", help="output report file", dest="report")
@@ -37,6 +39,17 @@ def make_summary_data(metadata):
                             "admin2_count": row["admin2_count"]}
             summary_data.append(cluster_dict)
     return summary_data
+
+def make_background_metadata(background_metadata,background_fields):
+    background_data = {}
+    with open(background_metadata, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            cluster_dict = {}
+            for field in background_fields:
+                cluster_dict[field] = row[field]
+            background_data[row["sequence_name"]] = cluster_dict
+    return background_data
 
 def make_cluster_data(metadata,include_stats,tree_dir):
     cluster_data = []
@@ -87,6 +100,8 @@ def make_report():
 
     include_stats = args.include_stats.split(",")
     cluster_data = make_cluster_data(args.metadata, include_stats, args.tree_dir)
+    background_fields = args.background_fields.split(",")
+    background_data = make_background_metadata(args.background_metadata,background_fields)
 
     today = date.today()
     
@@ -94,7 +109,7 @@ def make_report():
     mytemplate = Template(filename=args.template)
     buf = StringIO()
 
-    ctx = Context(buf, command = args.command, date = today, version = __version__, summary_data = summary_data, cluster_data = cluster_data)
+    ctx = Context(buf, command = args.command, date = today, version = __version__, summary_data = summary_data, cluster_data = cluster_data, background_data = background_data)
 
     mytemplate.render_context(ctx)
     with open(args.report,"w") as fw:
