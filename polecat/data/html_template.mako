@@ -128,6 +128,42 @@
         background-color: hsla(var(--cd-color-3-h), var(--cd-color-3-s), var(--cd-color-3-l), 0.8)
     }
 
+    .slidecontainer {
+      width: 100%;
+    }
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 15px;
+      background: #d3d3d3;
+      border-radius: 5px;
+      stroke: dimgrey;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+    .slider:hover {
+      opacity: 1; 
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%; 
+      background: #86b0a6;
+      stroke: dimgrey;
+      cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      stroke: dimgrey;
+      background: #86b0a6;
+      cursor: pointer;
+    } 
     </style>
 
   </head>
@@ -150,9 +186,8 @@
         return false;
         });
         });
-      </script>
-
-
+    </script>
+    
     <script type="text/javascript">
       const updateTableFactory = (tooltipId,metadata)=>(tipId)=>{
               const data = metadata[tipId];
@@ -268,21 +303,18 @@
             </table>
 
         <br>
-        <div class="row">
-    
-          <div class="col-xs-8">
-            <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
-            </div>
-            <div class="col-xs-4" id="tooltip_${cluster['cluster_no']}">
-          </div>
-          <script type="text/javascript">
-            buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}","tooltip_${cluster['cluster_no']}",'${background_data}');
-            </script>
-        </div>
-        
+
+        <div id="slider_${cluster['cluster_no']}">
+          <input class="slider" type="range" id="rangeinput_${cluster['cluster_no']}"  min="400" max="700" style="width: 100px" value="400" />
+          <span class="highlight"></span>
+        </div> 
+
+        <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
+        <script type="text/javascript">
+        buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}");
+        </script>
 
         % endfor
-
         <script>
           function myFunction(myInput, myTable) {
             var input, filter, table, tr, td, i, txtValue;
@@ -321,6 +353,7 @@
       </div>
     </footer>
     </div>
+    
     
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
