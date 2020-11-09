@@ -87,12 +87,103 @@
     h3{
         font-size: 1em;
     }
+    #toTopBtn {
+    position: fixed;
+    bottom: 26px;
+    right: 39px;
+    z-index: 98;
+    padding: 21px;
+    background-color: #86b0a6
+    }
+    .js .cd-top--fade-out {
+        opacity: .5
+    }
+    .js .cd-top--is-visible {
+        visibility: visible;
+        opacity: 1
+    }
+
+    .js .cd-top {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity .3s, visibility .3s, background-color .3s
+    }
+
+    .cd-top {
+        position: fixed;
+        bottom: 20px;
+        bottom: var(--cd-back-to-top-margin);
+        right: 20px;
+        right: var(--cd-back-to-top-margin);
+        display: inline-block;
+        height: 40px;
+        height: var(--cd-back-to-top-size);
+        width: 40px;
+        width: var(--cd-back-to-top-size);
+        box-shadow: 0 0 10px rgba(0, 0, 0, .05) !important;
+        background: url(https://res.cloudinary.com/dxfq3iotg/image/upload/v1571057658/cd-top-arrow.svg) no-repeat center 50%;
+        background-color:#86b0a6;
+        background-color: hsla(var(--cd-color-3-h), var(--cd-color-3-s), var(--cd-color-3-l), 0.8)
+    }
+
+    .slidecontainer {
+      width: 100%;
+    }
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 15px;
+      background: #d3d3d3;
+      border-radius: 5px;
+      stroke: dimgrey;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+    .slider:hover {
+      opacity: 1; 
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%; 
+      background: #86b0a6;
+      stroke: dimgrey;
+      cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      stroke: dimgrey;
+      background: #86b0a6;
+      cursor: pointer;
+    } 
     </style>
 
   </head>
 
   <body>
-
+    <script>
+      $(document).ready(function() {
+        $(window).scroll(function() {
+        if ($(this).scrollTop() > 20) {
+        $('#toTopBtn').fadeIn();
+        } else {
+        $('#toTopBtn').fadeOut();
+        }
+        });
+        
+        $('#toTopBtn').click(function() {
+        $("html, body").animate({
+        scrollTop: 0
+        }, 400);
+        return false;
+        });
+        });
     </script>
     
     <script type="text/javascript">
@@ -125,6 +216,7 @@
     </script>
 
     <div class="container">
+      <a href="#" id="toTopBtn" class="cd-top text-replace js-cd-top cd-top--is-visible cd-top--fade-out" data-abc="true"></a>
 
       <div class="starter-template">
         <header>
@@ -157,7 +249,7 @@
         </tr>
         % for row in summary_data:
             <tr>
-              <td><a href="#${row['cluster_no']}">${row["cluster_no"]}</a></td>
+              <td><a href="#${row['cluster_no']}" style="color:#86b0a6">${row["cluster_no"]}</a></td>
               <td>${row["most_recent_tip"]}</td>
               <td>${row["tip_count"]}</td>
               <td>${row["admin0_count"]}</td>
@@ -185,25 +277,57 @@
             </table>
 
         <br>
+
+        <div id="slider_${cluster['cluster_no']}">
+          <input class="slider" type="range" id="rangeinput_${cluster['cluster_no']}"  min="400" max="700" style="width: 100px" value="400" />
+          <span class="highlight"></span>
+        </div> 
+
         <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
         <script type="text/javascript">
         buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}");
         </script>
 
         % endfor
-
-    <footer>
-        <!-- <img src=https://raw.githubusercontent.com/COG-UK/polecat/master/docs/doc_figures/polecat_logo.svg vertical-align="middle" width="100" height="100" style="float:right;"></img> -->
+        <script>
+          function myFunction(myInput, myTable) {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById(myInput);
+            filter = input.value.toUpperCase();
+            table = document.getElementById(myTable);
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+              td = tr[i].getElementsByTagName("td")[0];
+              if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                  tr[i].style.display = "";
+                } else {
+                  tr[i].style.display = "none";
+                }
+              }       
+            }
+          }
+          </script>
+    <footer class="page-footer">
+      <div class="container-fluid text-right text-md-right">
         <hr>
-        <p>
-        <span style="float:left;">Rambaut Lab, University of Edinburgh, 2020<br><small class="text-muted">GNU General Public License v3.0</small></span>
-        <span style="float:right;"> polecat ${version} | <small class="text-muted">Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool</small> </span>
+        <div class="row">
+          <div class="col-sm-1">
+            <p>
+            <img src=https://raw.githubusercontent.com/COG-UK/polecat/master/docs/doc_figures/polecat_logo.svg vertical-align="left" width="50" height="50"></img>
+            <p>
+        </div>
+
+      <div class="col-sm-11" style="text-align: right;">
+        polecat ${version} | <small class="text-muted">Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool</small> <br><small class="text-muted">GNU General Public License v3.0</small></div>
 
         <br><br>
         </p>
-
+      </div>
     </footer>
     </div>
+    
     
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
