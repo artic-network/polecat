@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/gh/rambaut/figtree.js@c0b3708/dist/figtree.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/rambaut/figtree.js@e03decdb/dist/figtree.umd.js"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -89,7 +89,6 @@
     h3{
         font-size: 1em;
     }
-
     #toTopBtn {
     position: fixed;
     bottom: 26px;
@@ -128,6 +127,7 @@
         background-color:#86b0a6;
         background-color: hsla(var(--cd-color-3-h), var(--cd-color-3-s), var(--cd-color-3-l), 0.8)
     }
+
     </style>
 
   </head>
@@ -152,34 +152,59 @@
         });
       </script>
 
-      <script type="text/javascript">
-          function buildTree(svgID, myTreeString,tooltipID,backgroundData) {
-              const margins = {top:50,bottom:60,left:100,right:250}
-              const svg = d3.select(document.getElementById(svgID))
-              svg.selectAll("g").remove();
 
-              const newickString = myTreeString;
-              const tree = figtree.Tree.parseNewick(newickString);
-              const fig = new figtree.FigTree(document.getElementById(svgID),margins, tree)
-              fig.layout(figtree.rectangularLayout)
-                            .nodes(figtree.circle()
-                                    .attr("r",8)
-                                    .hilightOnHover(20)
-                                    .attr("stroke","dimgrey"),
-                                  figtree.tipLabel(v=>v.name)
-                                    )
-                            .nodeBackgrounds(figtree.circle()
-                                              .attr("r", 10)
-                                              .attr("fill","dimgrey")
-                                              
-                                              
-                                            )
-                            .branches(figtree.branch()
-                                        .hilightOnHover(20) 
-                                        .collapseOnClick()
+    <script type="text/javascript">
+      const updateTableFactory = (tooltipId,metadata)=>(tipId)=>{
+              const data = metadata[tipId];
+              const tableDiv = d3.select(document.getElementById(tooltipId));
+              //Remove table
+          tableDiv.html("")
+              if (data !== undefined) {
+                  const visibleData = Object.keys(data).filter(d=>d!=='sequence_name');
+                  tableDiv.append("h3")
+                      .attr("class",'tooltip-header')
+                      .text(tipId);
+                  tableDiv.selectAll("p")
+                          .data(visibleData)
+                          .enter()
+                          .append("p")
+                          .attr("class","tooltip-text")
+                              .selectAll("span")
+                              .data(d=>[d,data[d]])
+                              .enter()
+                              .append("span")
+                              .attr("class",(d,i)=> i===0? "tooltip-key" :"tooltip-value")
+                              .text((d,i)=>i===0?`${d} : `:d)
+              }
+      }
+      function buildTree(svgID, myTreeString,tooltipID,backgroundDataString) {
+          const backgroundData = JSON.parse(backgroundDataString);
+          const updateTable = updateTableFactory(tooltipID, backgroundData);
+          const margins = {top:50,bottom:60,left:100,right:250}
+          const svg = d3.select(document.getElementById(svgID))
+          svg.selectAll("g").remove();
+          const newickString = myTreeString;
+          const tree = figtree.Tree.parseNewick(newickString);
+          const fig = new figtree.FigTree(document.getElementById(svgID),margins, tree)
+          fig.layout(figtree.rectangularLayout)
+                        .nodes(figtree.circle()
+                                  .filter(n=>!n.children||n[fig.id].collapsed)
+                                .attr("r",8)
+                                .hilightOnHover(20)
+                                .onClick(node=>updateTable(node.name)),
+                              figtree.tipLabel(v=>v.name)
                                 )
-          }
-      </script>
+                        .nodeBackgrounds(figtree.circle()
+                                          .attr("r", 10)
+                                .filter(n=>!n.children||n[fig.id].collapsed)
+                                        .attr("fill","dimgrey")
+                                        )
+                        .branches(figtree.branch()
+                                    .hilightOnHover(20) 
+                                    .collapseOnClick()
+                            )
+      }
+    </script>
 
     <div class="container">
       <a href="#" id="toTopBtn" class="cd-top text-replace js-cd-top cd-top--is-visible cd-top--fade-out" data-abc="true"></a>
@@ -248,7 +273,7 @@
           <div class="col-xs-8">
             <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
             </div>
-            <div class="col-xs-4" id="tooltip_${cluster['cluster_no']}" >
+            <div class="col-xs-4" id="tooltip_${cluster['cluster_no']}">
           </div>
           <script type="text/javascript">
             buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}","tooltip_${cluster['cluster_no']}",'${background_data}');
