@@ -7,6 +7,7 @@ from datetime import date
 
 from mako.template import Template
 from mako.runtime import Context
+from mako.exceptions import RichTraceback
 from io import StringIO
 import json
 
@@ -101,6 +102,7 @@ def make_report():
 
     include_stats = args.include_stats.split(",")
     cluster_data = make_cluster_data(args.metadata, include_stats, args.tree_dir)
+
     background_fields = args.background_fields.split(",")
     background_data = make_background_metadata(args.background_metadata,background_fields)
 
@@ -112,7 +114,17 @@ def make_report():
 
     ctx = Context(buf, command = args.command, date = today, version = __version__, summary_data = summary_data, cluster_data = cluster_data, background_data = background_data)
 
-    mytemplate.render_context(ctx)
+
+    try:
+    
+        mytemplate.render_context(ctx)
+    except:
+        traceback = RichTraceback()
+        for (filename, lineno, function, line) in traceback.traceback:
+            print("File %s, line %s, in %s" % (filename, lineno, function))
+            print(line, "\n")
+        print("%s: %s" % (str(traceback.error.__class__.__name__), traceback.error))
+
     with open(args.report,"w") as fw:
         fw.write(buf.getvalue())
 

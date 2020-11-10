@@ -62,6 +62,12 @@
         z-index: 300;
         visibility: hidden;
   }
+  .tooltip-header {
+    font-size: 1.3em;
+  }
+  .tooltip-key {
+    font-weight: bold;
+  }
     .branch path{
     stroke-width:2;
     stroke: dimgrey;
@@ -78,10 +84,10 @@
          font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
          font-weight: 300;
       }
-    .starter-template {
+    /* .starter-template {
       padding: 40px 15px;
       text-align: left;
-    }
+    } */
     .svg-icon {
     display: inline-flex;
     align-self: center;
@@ -198,7 +204,8 @@
                   const visibleData = Object.keys(data).filter(d=>d!=='sequence_name');
                   tableDiv.append("h3")
                       .attr("class",'tooltip-header')
-                      .text(tipId);
+                      .text(tipId)
+                      .append("hr");
                   tableDiv.selectAll("p")
                           .data(visibleData)
                           .enter()
@@ -209,9 +216,10 @@
                               .enter()
                               .append("span")
                               .attr("class",(d,i)=> i===0? "tooltip-key" :"tooltip-value")
-                              .text((d,i)=>i===0?`${d} : `:d)
+                              .text((d,i)=>i===0? d + " : ": d);
               }
       }
+
       function buildTree(svgID, myTreeString,tooltipID,backgroundDataString) {
           const backgroundData = JSON.parse(backgroundDataString);
           const updateTable = updateTableFactory(tooltipID, backgroundData);
@@ -304,17 +312,25 @@
 
         <br>
 
-        <div id="slider_${cluster['cluster_no']}">
-          <input class="slider" type="range" id="rangeinput_${cluster['cluster_no']}"  min="400" max="700" style="width: 100px" value="400" />
-          <span class="highlight"></span>
-        </div> 
+          <div id="slider_${cluster['cluster_no']}">
+            <input class="slider" type="range" id="rangeinput_${cluster['cluster_no']}"  min="400" max="700" style="width: 100px" value="400" />
+            <span class="highlight"></span>
+          </div> 
 
-        <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
-        <script type="text/javascript">
-        buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}");
-        </script>
+          <div class="row">
+      
+            <div class="col-xs-7">
+              <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
+            </div>
+            <div class="col-xs-4" id="tooltip_${cluster['cluster_no']}">
+            </div> 
+            <script type="text/javascript">
+              buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}","tooltip_${cluster['cluster_no']}",'${background_data}');
+            </script> 
+          </div> 
 
         % endfor
+
         <script>
           function myFunction(myInput, myTable) {
             var input, filter, table, tr, td, i, txtValue;
