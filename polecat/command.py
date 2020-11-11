@@ -27,7 +27,7 @@ cwd = os.getcwd()
 def main(sysargs = sys.argv[1:]):
 
     parser = argparse.ArgumentParser(prog = _program, 
-    description='polecat: Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool', 
+    description=pfunk.preamble(), 
     usage='''polecat -i <config.yaml> [options]''')
 
     io_group = parser.add_argument_group('input output options')

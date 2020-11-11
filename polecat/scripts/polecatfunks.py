@@ -397,6 +397,26 @@ def get_datadir(args_climb,args_uun,args_datadir,args_metadata,cwd,config):
 
     config["datadir"]=data_dir
 
+def preamble():
+    print(green("""\n
+                               __                        __   
+                ______   ____ |  |   ____   ____    ____/  |_ 
+                \____ \ /    \|  |  / __ \_/ ___\  /  \    __|
+                |  |_\ |   |  |  |_\  ___/\  \___ / __ \|  |   
+                |   __/ \____/|____/\____/ \____/ ____  /__|  
+                |__|                                          
+
+                            Phylogenetic Overview 
+                                        & 
+                    Local Epidemiological Cluster Analysis Tool 
+
+                    ****************************************
+
+                    JT McCrone, Aine O'Toole & Andrew Rambaut  
+                                    Rambaut Group              
+                                Edinburgh University          
+                """))
+
 
 def colour(text, text_colour):
     bold_text = 'bold' in text_colour
