@@ -8,6 +8,5 @@ dependencies:
   - pip=19.3.1
   - snakemake-minimal=5.13
   - cov-ert::jclusterfunk
-  - pip:
-    - git+https://github.com/cov-ert/reportfunk.git
+
 
