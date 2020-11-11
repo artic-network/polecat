@@ -48,6 +48,13 @@
       fill:#86b0a6;
       stroke:dimgrey;
       }
+    .node circle.selected{
+      stroke-width:0;
+      cursor:pointer;
+      fill:#b08686;
+      stroke:dimgrey;
+      }
+
     .node rect{
       stroke-width:2;
       fill:#b08686;
@@ -181,6 +188,19 @@
       max-height: 600px;
       overflow: scroll;
     }
+    .label.polecat-hidden{
+      display: none;
+    }
+
+    .node.hovered .polecat-hidden{
+        display:inline;
+      }
+
+    div.sticky {
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+        top: 0;
+      }
     </style>
 
   </head>
@@ -234,10 +254,9 @@
       function addSliderEventHandler(sliderID,fig){
         const svg = fig.svgSelection.select(function() { return this.parentNode; })
         const initialHeight = svg.attr("height");
-        const potentialMaxHeight = fig.tree().externalNodes.length*50+20; // 50 pixels for each tip plus a little for margins
-        const maxHeight = potentialMaxHeight>initialHeight?potentialMaxHeight:initialHeight;
-        
-        if(maxHeight===initialHeight){
+        const maxHeight = fig.tree().externalNodes.length*50; // 50 pixels for each tip plus a little for margins;
+
+        if(maxHeight<=initialHeight){
           d3.select(`#${sliderID}`).remove();// don't need  a slider
           return;
         }
@@ -245,10 +264,26 @@
                 .range([initialHeight,maxHeight])
                 .domain([0,1])
 
+            if(initialHeight/fig.tree().externalNodes.length>12){
+              fig.svgSelection.selectAll(".label")
+                              .classed("polecat-hidden",false)
+            }else{
+              fig.svgSelection.selectAll(".label")
+              .classed("polecat-hidden",true)
+            }
+
         d3.select(`#${sliderID}`).on("input",function(){
               const svgHeight = heightScale(this.value);
+              //magic number!!
               svg.attr("height", svgHeight);
             fig.update();
+            if(svgHeight/fig.tree().externalNodes.length>12){
+              fig.svgSelection.selectAll(".label")
+                              .classed("polecat-hidden",false)
+            }else{
+              fig.svgSelection.selectAll(".label")
+              .classed("polecat-hidden",true)
+            }
         })
       }
       </%text>
@@ -267,7 +302,11 @@
                                   .filter(n=>!n.children)
                                   .attr("r",8)
                                   .hilightOnHover(20)
-                                  .onClick(node=>updateTable(node.name)),
+                                  .onClick((node,i,n)=>{
+                                    updateTable(node.name);
+                                    fig.svgSelection.selectAll(".selected").classed("selected",false);
+                                    d3.select(n[i]).classed("selected",true);
+                                  }),
                           figtree.tipLabel(v=>v.name),
                           figtree.rectangle()
                                   .filter(n=>n[fig.id].collapsed)
@@ -310,8 +349,7 @@
     
     <br>
 
-    <h3><strong>Table 1</strong> | Summary of clusters   <input style = "float:right" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for cluster..." title="searchbar"></h3>
-    
+    <h3><strong>Table 1</strong> | Summary of clusters   <input style = "border-style:solid; border-color: lightgrey; border-radius: 5px; float:right" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for cluster..." title="searchbar"></h3>
     <table class="table table-striped" id="myTable">
         <tr class="header">
         <th style="width:10%;">Cluster number</th>
@@ -363,7 +401,7 @@
             <div class="col-xs-7">
               <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
             </div>
-            <div class="col-xs-4" id="tooltip_${cluster['cluster_no']}">
+            <div class="col-xs-4 sticky" id="tooltip_${cluster['cluster_no']}">
             </div> 
             <script type="text/javascript">
               buildTree("tree_${cluster['cluster_no']}", 
