@@ -5,7 +5,7 @@ from Bio import SeqIO
 import os
 import yaml
 import collections
-
+import polecatfunks as pfunk
 
 output_prefix = config["output_prefix"]
 ##### Configuration #####
@@ -117,7 +117,8 @@ rule make_report:
         clusterdir = os.path.join(config["outdir"],"cluster_trees")
     output:
         report = os.path.join(config["outdir"],"report", f"{output_prefix}.html")
-    shell:
+    run:
+        shell(
         """
         render_report.py \
         --metadata {input.csv:q} \
@@ -128,5 +129,6 @@ rule make_report:
         --background-metadata {input.metadata:q} \
         --background-fields {config[background_fields]} \
         --tree-dir {params.clusterdir:q}
-        """
+        """)
+    print(pfunk.green("Polecat report written to:") + f"{output.report}")
 

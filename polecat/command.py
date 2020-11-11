@@ -16,7 +16,6 @@ from Bio import SeqIO
 import pkg_resources
 from . import _program
 
-from reportfunk.funks import io_functions as qcfunk
 from reportfunk.funks import report_functions as rfunk
 from reportfunk.funks import custom_logger as custom_logger
 from reportfunk.funks import log_handler_handle as lh
@@ -87,11 +86,11 @@ def main(sysargs = sys.argv[1:]):
     
     """
     # find config file
-    qcfunk.add_arg_to_config("config",args.config,config)
+    pfunk.add_arg_to_config("config",args.config,config)
 
     # if a yaml file is detected, add everything in it to the config dict
     if config["config"]:
-        qcfunk.parse_yaml_file(config["config"], config)
+        pfunk.parse_yaml_file(config["config"], config)
     
     """
     Output directory 
@@ -104,7 +103,7 @@ def main(sysargs = sys.argv[1:]):
     """
     
     # specifying temp directory, outdir if no_temp (tempdir becomes working dir)
-    tempdir = qcfunk.get_temp_dir(args.tempdir, args.no_temp,cwd,config)
+    tempdir = pfunk.get_temp_dir(args.tempdir, args.no_temp,cwd,config)
 
     """
     Parsing the cluster_group arguments, 
@@ -117,12 +116,12 @@ def main(sysargs = sys.argv[1:]):
     Data dir finding or rsyncing
     """
 
-    qcfunk.add_arg_to_config("remote",args.remote, config)
+    pfunk.add_arg_to_config("remote",args.remote, config)
 
     pfunk.get_datadir(args.climb,args.uun,args.datadir,args.background_metadata,cwd,config)
 
     # add data column to config
-    qcfunk.add_arg_to_config("data_column",args.data_column, config)
+    pfunk.add_arg_to_config("data_column",args.data_column, config)
 
 
     """
@@ -134,8 +133,8 @@ def main(sysargs = sys.argv[1:]):
     config["command"] = f"polecat {command}"
 
     config["template"] = template
-    qcfunk.add_arg_to_config("stats",args.stats, config)
-    qcfunk.add_arg_to_config("background_fields",args.background_fields, config)
+    pfunk.add_arg_to_config("stats",args.stats, config)
+    pfunk.add_arg_to_config("background_fields",args.background_fields, config)
 
     # check if metadata has the right columns, background_metadata_header added to config
     pfunk.check_metadata_for_stat_fields(config)
@@ -145,7 +144,7 @@ def main(sysargs = sys.argv[1:]):
     Miscellaneous options parsing
 
     """
-    qcfunk.add_arg_to_config("launch_browser",args.launch_browser,config)
+    pfunk.add_arg_to_config("launch_browser",args.launch_browser,config)
 
     # don't run in quiet mode if verbose specified
     if args.verbose:
@@ -157,23 +156,23 @@ def main(sysargs = sys.argv[1:]):
         config["log_string"] = f"--quiet --log-handler-script {lh_path} "
 
     
-    qcfunk.add_arg_to_config("threads",args.threads,config)
+    pfunk.add_arg_to_config("threads",args.threads,config)
     
     try:
         config["threads"]= int(config["threads"])
     except:
-        sys.stderr.write(qcfunk.cyan('Error: Please specifiy an integer for variable `threads`.\n'))
+        sys.stderr.write(pfunk.cyan('Error: Please specifiy an integer for variable `threads`.\n'))
         sys.exit(-1)
     threads = config["threads"]
 
 
     # find the master Snakefile
-    snakefile = qcfunk.get_snakefile(thisdir)
+    snakefile = pfunk.get_snakefile(thisdir)
 
     if args.verbose:
         
         for k in sorted(config):
-            print(qcfunk.green(k), config[k])
+            print(pfunk.green(k), config[k])
         status = snakemake.snakemake(snakefile, printshellcmds=True, forceall=True, force_incomplete=True,
                                     workdir=tempdir,config=config, cores=threads,lock=False
                                     )

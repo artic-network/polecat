@@ -12,8 +12,16 @@ import tempfile
 import pkg_resources
 import yaml
 
-from reportfunk.funks import io_functions as qcfunk
-from reportfunk.funks import tree_functions as tree_funk
+
+
+END_FORMATTING = '\033[0m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[93m'
+CYAN = '\u001b[36m'
+DIM = '\033[2m'
 
 def get_defaults():
     default_dict = {"threads":1,
@@ -67,7 +75,7 @@ def make_timestamped_outdir(cwd,outdir,config):
 def get_outdir(outdir_arg,output_prefix_arg,cwd,config):
     outdir = ''
     
-    qcfunk.add_arg_to_config("output_prefix",output_prefix_arg, config)
+    add_arg_to_config("output_prefix",output_prefix_arg, config)
     
     if outdir_arg:
         expanded_path = os.path.expanduser(outdir_arg)
@@ -102,7 +110,7 @@ def get_outdir(outdir_arg,output_prefix_arg,cwd,config):
     if not os.path.exists(figure_output):
         os.mkdir(figure_output)
 
-    print(qcfunk.green(f"Output dir:") + f" {outdir}")
+    print(green(f"Output dir:") + f" {outdir}")
     config["outdir"] = outdir 
     config["rel_outdir"] = os.path.join(".",rel_outdir) 
         
@@ -113,72 +121,102 @@ def qc_cluster_arg(key,arg,type_var,config):
             var = type_var(var)
             config[key] = f"{arg} {var}"
         except:
-            sys.stderr.write(qcfunk.cyan(f"Error: {arg} must be {type_var}\n"))
+            sys.stderr.write(cyan(f"Error: {arg} must be {type_var}\n"))
             sys.exit(-1)
     else:
         config[key] = ""
 
+def get_snakefile(thisdir):
+    snakefile = os.path.join(thisdir, 'scripts','Snakefile')
+    if not os.path.exists(snakefile):
+        sys.stderr.write(cyan(f'Error: cannot find Snakefile at {snakefile}\n Check installation\n'))
+        sys.exit(-1)
+    return snakefile
+
+def get_temp_dir(tempdir_arg,no_temp_arg, cwd,config):
+    tempdir = ''
+    outdir = config["outdir"]
+    if no_temp_arg:
+        print(green(f"--no-temp:") + f" All intermediate files will be written to {outdir}")
+        tempdir = outdir
+        config["no_temp"] = no_temp_arg
+    elif config["no_temp"]:
+        print(green(f"--no-temp:") + f" All intermediate files will be written to {outdir}")
+        tempdir = outdir
+    elif tempdir_arg:
+        expanded_path = os.path.expanduser(tempdir_arg)
+        to_be_dir = os.path.join(cwd,expanded_path)
+        if not os.path.exists(to_be_dir):
+            os.mkdir(to_be_dir)
+        temporary_directory = tempfile.TemporaryDirectory(suffix=None, prefix=None, dir=to_be_dir)
+        tempdir = temporary_directory.name
+
+    elif "tempdir" in config:
+        expanded_path = os.path.expanduser(config["tempdir"])
+        to_be_dir = os.path.join(cwd,expanded_path)
+        if not os.path.exists(to_be_dir):
+            os.mkdir(to_be_dir)
+        temporary_directory = tempfile.TemporaryDirectory(suffix=None, prefix=None, dir=to_be_dir)
+        tempdir = temporary_directory.name
+
+    else:
+        temporary_directory = tempfile.TemporaryDirectory(suffix=None, prefix=None, dir=None)
+        tempdir = temporary_directory.name
+    
+    config["tempdir"] = tempdir 
+    return tempdir
+    
+def parse_yaml_file(configfile,config):
+    with open(configfile,"r") as f:
+        input_config = yaml.load(f, Loader=yaml.FullLoader)
+        for key in input_config:
+            snakecase_key = key.replace("-","_")
+            config[snakecase_key] = input_config[key]
+
+def add_arg_to_config(key,arg,config):
+    if arg:
+        config[key] = arg
+
 def cluster_group_to_config(args,config):
     ## max_age
-    qcfunk.add_arg_to_config("max_age",args.max_age, config)
+    add_arg_to_config("max_age",args.max_age, config)
     qc_cluster_arg("max_age","--max-age",int,config)
 
     ## max_count
-    qcfunk.add_arg_to_config("max_count",args.max_count, config)
+    add_arg_to_config("max_count",args.max_count, config)
     qc_cluster_arg("max_count","--max-count",int,config)
 
     ## max_recency
-    qcfunk.add_arg_to_config("max_recency",args.max_recency, config)
+    add_arg_to_config("max_recency",args.max_recency, config)
     qc_cluster_arg("max_recency","--max-recency",int,config)
 
     ## max_size
-    qcfunk.add_arg_to_config("max_size",args.max_size, config)
+    add_arg_to_config("max_size",args.max_size, config)
     qc_cluster_arg("max_size","--max-size",int,config)
 
     ## min_size
-    qcfunk.add_arg_to_config("min_size",args.min_size, config)
+    add_arg_to_config("min_size",args.min_size, config)
     qc_cluster_arg("min_size","--min-size",int,config)
 
     ## min_UK
-    qcfunk.add_arg_to_config("min_UK",args.min_UK, config)
+    add_arg_to_config("min_UK",args.min_UK, config)
     qc_cluster_arg("min_UK","--min-UK",float,config)
 
     ## optimize_by
-    qcfunk.add_arg_to_config("optimize_by",args.optimize_by, config)
+    add_arg_to_config("optimize_by",args.optimize_by, config)
     qc_cluster_arg("optimize_by","--optimize-by",str,config)
 
     ## rank_by
-    qcfunk.add_arg_to_config("rank_by",args.rank_by, config)
+    add_arg_to_config("rank_by",args.rank_by, config)
     qc_cluster_arg("rank_by","--rank-by",str,config)
 
 def report_group_to_config(args,config):
     ## summary_fields
-    qcfunk.add_arg_to_config("summary_fields",args.summary_fields, config)
+    add_arg_to_config("summary_fields",args.summary_fields, config)
 
     ## cluster_fields
-    qcfunk.add_arg_to_config("cluster_fields",args.cluster_fields, config)
+    add_arg_to_config("cluster_fields",args.cluster_fields, config)
         
-    # ## display_name
-    # qcfunk.add_arg_to_config("display_name", args.display_name, config)
-    
-    # ## colour_by
-    # qcfunk.add_arg_to_config("colour_by",args.colour_by, config)
-
-    # ## tree_fields
-    # qcfunk.add_arg_to_config("tree_fields",args.tree_fields, config)
-
-    # ## label_fields
-    # qcfunk.add_arg_to_config("label_fields",args.label_fields, config)
-
-    # ##date_fields
-    # qcfunk.add_arg_to_config("date_fields", args.date_fields, config)
-
-    # ##sample date column
-    # qcfunk.add_arg_to_config("sample_date_column", args.sample_date_column,config)
-    # qcfunk.add_arg_to_config("database_sample_date_column", args.database_sample_date_column, config)
-
-    # ## node-summary
-    # qcfunk.add_arg_to_config("node_summary",args.node_summary, config)
 
 def get_stat_list():
     return "node_number,parent_number,most_recent_tip,least_recent_tip,day_range,persistence,recency,age,tip_count,uk_tip_count,uk_child_count,uk_chain_count,identical_count,divergence_ratio,mean_tip_divergence,stem_length,growth_rate,lineage,uk_lineage,proportion_uk,admin0_count,admin1_count,admin2_count,admin0_mode,admin1_mode,admin2_mode,admin1_entropy,admin2_entropy,tips".split(",")
@@ -191,7 +229,7 @@ def check_metadata_for_stat_fields(config):
 
     for stat in show_stats:
         if stat not in stat_list:
-            sys.stderr.write(qcfunk.cyan(f'Error: {stat} not a valid polecat statistic\n'))
+            sys.stderr.write(cyan(f'Error: {stat} not a valid polecat statistic\n'))
             sys.exit(-1)
 
 def check_metadata_for_background_fields(config):
@@ -204,30 +242,30 @@ def check_metadata_for_background_fields(config):
         background_fields = config["background_fields"].split(",")
 
         if "sequence_name" not in header:
-            sys.stderr.write(qcfunk.cyan(f'Error: "sequence_name" is a required field in background metadata\n'))
+            sys.stderr.write(cyan(f'Error: "sequence_name" is a required field in background metadata\n'))
             sys.exit(-1)
 
         for field in background_fields:
             if field not in header:
-                sys.stderr.write(qcfunk.cyan(f'Error: {field} not present in background metadata\n'))
+                sys.stderr.write(cyan(f'Error: {field} not present in background metadata\n'))
                 sys.exit(-1)
 
 
 def print_data_error(data_dir):
-    sys.stderr.write(qcfunk.cyan(f"Error: data directory should contain the following files or additionally supply a background metadata file:\n") + f"\
+    sys.stderr.write(cyan(f"Error: data directory should contain the following files or additionally supply a background metadata file:\n") + f"\
     - cog_global_2020-XX-YY_tree.nexus\n\
     - cog_global_2020-XX-YY_metadata.csv\n\
-    - cog_global_2020-XX-YY_alignment.fasta\n"+qcfunk.cyan(f"\
+    - cog_global_2020-XX-YY_alignment.fasta\n"+cyan(f"\
 To run civet please either\n1) ssh into CLIMB and run with --CLIMB flag\n\
 2) Run using `--remote` flag and your CLIMB username specified e.g. `-uun climb-covid19-smithj`\n\
 3) Specify a local directory with the appropriate files, optionally supply a custom metadata file\n\n"""))
 
 def rsync_data_from_climb(uun, data_dir):
     rsync_command = f"rsync -avzh --exclude 'cog' --delete-after {uun}@bham.covid19.climb.ac.uk:/cephfs/covid/bham/results/phylogenetics/latest/civet/ '{data_dir}'"
-    print(qcfunk.green(f"Syncing civet data to {data_dir}"))
+    print(green(f"Syncing civet data to {data_dir}"))
     status = os.system(rsync_command)
     if status != 0:
-        sys.stderr.write(qcfunk.cyan("Error: rsync command failed.\nCheck your user name is a valid CLIMB username e.g. climb-covid19-smithj\nAlso, check if you have access to CLIMB from this machine and are in the UK\n\n"))
+        sys.stderr.write(cyan("Error: rsync command failed.\nCheck your user name is a valid CLIMB username e.g. climb-covid19-smithj\nAlso, check if you have access to CLIMB from this machine and are in the UK\n\n"))
         sys.exit(-1)
 
 def get_background_files(data_dir,background_metadata):
@@ -266,7 +304,7 @@ def get_remote_data(uun,background_metadata,data_dir,config):
         print(f"Syncing civet data to {data_dir}")
         status = os.system(rsync_command)
         if status != 0:
-            sys.stderr.write(qcfunk.cyan("Error: rsync command failed.\nCheck your ssh is configured with Host bham.covid19.climb.ac.uk\nAlternatively enter your CLIMB username with -uun e.g. climb-covid19-smithj\nAlso, check if you have access to CLIMB from this machine and check if you are in the UK\n\n"))
+            sys.stderr.write(cyan("Error: rsync command failed.\nCheck your ssh is configured with Host bham.covid19.climb.ac.uk\nAlternatively enter your CLIMB username with -uun e.g. climb-covid19-smithj\nAlso, check if you have access to CLIMB from this machine and check if you are in the UK\n\n"))
             sys.exit(-1)
 
     background_seqs, background_tree, background_metadata, data_date = get_background_files(data_dir,background_metadata)
@@ -274,7 +312,7 @@ def get_remote_data(uun,background_metadata,data_dir,config):
     config["datadir"] = data_dir
     config["data_date"] = data_date
     if not os.path.exists(config["datadir"]):
-        print(qcfunk.cyan(f"Error: data directory not found at {data_dir}.\n"))
+        print(cyan(f"Error: data directory not found at {data_dir}.\n"))
         sys.exit(-1)
 
     if not os.path.isfile(background_tree) or not os.path.isfile(background_seqs) or not os.path.isfile(background_metadata):
@@ -285,7 +323,7 @@ def get_remote_data(uun,background_metadata,data_dir,config):
         config["background_seqs"] = background_seqs
         config["background_tree"] = background_tree
 
-        print(qcfunk.green("Found data:"))
+        print(green("Found data:"))
         print("    -",background_seqs)
         print("    -",background_metadata)
         print("    -",background_tree,"\n")
@@ -299,7 +337,7 @@ def get_datadir(args_climb,args_uun,args_datadir,args_metadata,cwd,config):
         expanded_path = os.path.expanduser(args_metadata)
         background_metadata = os.path.join(cwd, expanded_path)
         if not os.path.exists(background_metadata):
-            sys.stderr.write(qcfunk.cyan(f"Error: can't find metadata file at {background_metadata}.\n"))
+            sys.stderr.write(cyan(f"Error: can't find metadata file at {background_metadata}.\n"))
             sys.exit(-1)
 
     elif "background_metadata" in config:
@@ -307,7 +345,7 @@ def get_datadir(args_climb,args_uun,args_datadir,args_metadata,cwd,config):
             expanded_path = os.path.expanduser(config["background_metadata"])
             background_metadata = os.path.join(config["path_to_query"], expanded_path)
             if not os.path.exists(background_metadata):
-                sys.stderr.write(qcfunk.cyan(f"Error: can't find metadata file at {background_metadata}.\n"))
+                sys.stderr.write(cyan(f"Error: can't find metadata file at {background_metadata}.\n"))
                 sys.exit(-1)
             
     if args_climb:
@@ -316,7 +354,7 @@ def get_datadir(args_climb,args_uun,args_datadir,args_metadata,cwd,config):
             config["remote"] = False
             config["username"] = ""
         else:
-            sys.stderr.write(qcfunk.cyan(f"Error: --CLIMB argument called, but CLIMB data path doesn't exist.\n"))
+            sys.stderr.write(cyan(f"Error: --CLIMB argument called, but CLIMB data path doesn't exist.\n"))
             sys.exit(-1)
 
     elif args_datadir:
@@ -348,7 +386,7 @@ def get_datadir(args_climb,args_uun,args_datadir,args_metadata,cwd,config):
             config["background_seqs"] = background_seqs
             config["background_tree"] = background_tree
 
-            print("Found data:")
+            print(green("Found data:"))
             print("    -",background_seqs)
             print("    -",background_metadata)
             print("    -",background_tree,"\n")
@@ -360,47 +398,46 @@ def get_datadir(args_climb,args_uun,args_datadir,args_metadata,cwd,config):
     config["datadir"]=data_dir
 
 
-def make_all_of_the_trees(treedir, tree_name_stem, taxon_dict,config):
+def colour(text, text_colour):
+    bold_text = 'bold' in text_colour
+    text_colour = text_colour.replace('bold', '')
+    underline_text = 'underline' in text_colour
+    text_colour = text_colour.replace('underline', '')
+    text_colour = text_colour.replace('_', '')
+    text_colour = text_colour.replace(' ', '')
+    text_colour = text_colour.lower()
+    if 'red' in text_colour:
+        coloured_text = RED
+    elif 'green' in text_colour:
+        coloured_text = GREEN
+    elif 'yellow' in text_colour:
+        coloured_text = YELLOW
+    elif 'dim' in text_colour:
+        coloured_text = DIM
+    elif 'cyan' in text_colour:
+        coloured_text = 'cyan'
+    else:
+        coloured_text = ''
+    if bold_text:
+        coloured_text += BOLD
+    if underline_text:
+        coloured_text += UNDERLINE
+    if not coloured_text:
+        return text
+    coloured_text += text + END_FORMATTING
+    return coloured_text
 
-    tallest_height = tree_funk.find_tallest_tree(treedir)
-    config["tallest_height"] = tallest_height
+def red(text):
+    return RED + text + END_FORMATTING
 
-    trees = []
-    for r,d,f in os.walk(treedir):
-        for fn in f:
-            if fn.endswith(".tree"):
-                tree_name = ".".join(fn.split(".")[:-1])
-                trees.append((os.path.join(r,fn), tree_name))
-    
-    tree_to_num_tips = {}
-    num_tips = 0
-    for treefile,tree_name in trees:
+def cyan(text):
+    return CYAN + text + END_FORMATTING
 
-        with open(treefile,"r") as f:
-            for l in f:
-                l = l.rstrip("\n")
-                if l.startswith(" Dimensions NTax="):
-                    num_tips = int(l.rstrip(";").split("=")[1])
-                    tree_to_num_tips[treefile] = num_tips
+def green(text):
+    return GREEN + text + END_FORMATTING
 
-        if num_tips > 1: 
-            tree = bt.loadNewick(treefile, absoluteTime=False)
+def yellow(text):
+    return YELLOW + text + END_FORMATTING
 
-            #make root line
-            old_node = tree.root
-            new_node = bt.node()
-            new_node.children.append(old_node)
-            old_node.parent = new_node
-            old_node.length=0.000015
-            new_node.height = 0
-            new_node.y = old_node.y
-            tree.root = new_node
-
-            tree.Objects.append(new_node)
-
-            overall_tree_count += 1      
-            
-            if len(tips) < 500:
-                outfile = os.path.join(config["figdir"], f"{tree_name}.svg")
-                make_cluster_tree(tree, tree_name, num_tips, taxon_dict,outfile,config)     
-            
+def bold_underline(text):
+    return BOLD + UNDERLINE + text + END_FORMATTING
