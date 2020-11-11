@@ -50,8 +50,8 @@ def main(sysargs = sys.argv[1:]):
     cluster_group.add_argument('--max-size', action="store",help="Maximum number of tips in a subcluster. Default: none", dest="max_size")
     cluster_group.add_argument('--min-size', action='store',type=int,help="Minimum cluster size. Default: 5", dest="min_size")
     cluster_group.add_argument('--min-UK', action='store',type=int,help="Minimum proportion of UK tips. Default: none", dest="min_UK")
-    cluster_group.add_argument('--optimize-by', action="store",help="Citerion to use to find optimal cluster. Default: none", dest="optimize_by")
-    cluster_group.add_argument('--rank-by', action="store",help="Statistic to rank clusters by. Default: rate", dest="rank_by")
+    cluster_group.add_argument('--optimize-by', action="store",help="Cluster statistic to optimize across ancestry by. Options: growth-rate,identical-count,region-entropy,region-count,location-entropy,location-count,date-span,persistence,recency,age. Default: none", dest="optimize_by")
+    cluster_group.add_argument('--rank-by', action="store",help="Cluster statistic to rank clusters by (append ^ to sort up). Options: growth-rate,identical-count,region-entropy,region-count,location-entropy,location-count,date-span,persistence,recency,age Default: rate", dest="rank_by")
 
     report_group = parser.add_argument_group('report options')
     report_group.add_argument('--stats', action="store",help="Comma-separated string of which columns to include in the cluster tables. Default: sequence_name,lineage,country", dest="stats")
