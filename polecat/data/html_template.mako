@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/gh/rambaut/figtree.js@e03decdb/dist/figtree.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/rambaut/figtree.js@db798529/dist/figtree.umd.js"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -80,13 +80,15 @@
   .tooltip-key {
     font-weight: bold;
   }
-    .branch path{
+  .branch path{
     stroke-width:2;
     stroke: dimgrey;
+    stroke-linejoin:round;
+    cursor: pointer;
     }
     .branch.hovered path{
       stroke-width:4;
-      stroke: 4d4d4d;
+      stroke: dimgrey;
     }
       .node.hovered circle{
       stroke-width:5;
@@ -188,11 +190,15 @@
       max-height: 600px;
       overflow: scroll;
     }
-    .label.polecat-hidden{
+    .label{
       display: none;
     }
 
-    .node.hovered .polecat-hidden{
+    .label.show{
+      display: inline;
+    }
+
+    .node.hovered .label {
         display:inline;
       }
 
@@ -251,6 +257,7 @@
               }
       }
       <%text>
+      
       function addSliderEventHandler(sliderID,fig){
         const svg = fig.svgSelection.select(function() { return this.parentNode; })
         const initialHeight = svg.attr("height");
@@ -266,10 +273,7 @@
 
             if(initialHeight/fig.tree().externalNodes.length>12){
               fig.svgSelection.selectAll(".label")
-                              .classed("polecat-hidden",false)
-            }else{
-              fig.svgSelection.selectAll(".label")
-              .classed("polecat-hidden",true)
+              .classed("show",true)
             }
 
         d3.select(`#${sliderID}`).on("input",function(){
@@ -277,16 +281,17 @@
               //magic number!!
               svg.attr("height", svgHeight);
             fig.update();
-            if(svgHeight/fig.tree().externalNodes.length>12){
+            if(svgHeight/fig.tree().externalNodes.filter(node=>!node[fig.id].ignore).length>12){
               fig.svgSelection.selectAll(".label")
-                              .classed("polecat-hidden",false)
+              .classed("show",true)
             }else{
               fig.svgSelection.selectAll(".label")
-              .classed("polecat-hidden",true)
+              .classed("show",false)
             }
         })
       }
       </%text>
+
 
       function buildTree(svgID, myTreeString,tooltipID,backgroundDataString,sliderID) {
           const backgroundData = JSON.parse(backgroundDataString);
@@ -307,7 +312,7 @@
                                     fig.svgSelection.selectAll(".selected").classed("selected",false);
                                     d3.select(n[i]).classed("selected",true);
                                   }),
-                          figtree.tipLabel(v=>v.name),
+                          figtree.tipLabel(v=>v.name).attr("dx",10),
                           figtree.rectangle()
                                   .filter(n=>n[fig.id].collapsed)
                                   .attr("width",20)
@@ -321,7 +326,27 @@
                         .branches(figtree.branch()
                                     .hilightOnHover(20) 
                                     .collapseOnClick()
+                                    .on("click",()=>{
+                                      const svgHeight = fig.svgSelection.select(function() { return this.parentNode; }).attr("height");
+                                      if(svgHeight/fig.tree().externalNodes.filter(node=>!node[fig.id].ignore).length>12){
+                                        fig.svgSelection.selectAll(".label")
+                                          .classed("show",true)
+                                      }else{
+                                        fig.svgSelection.selectAll(".label")
+                                        .classed("show",false)
+                                      }
+                                    })
                             )
+                            .feature(
+                                    figtree.scaleBar()
+                                      .direction("x")
+                                      .length(1/29903)
+                                      .x(-60)
+                                      .y(-30)
+                                      // .y(fig.svgSelection.select(function() { return this.parentNode; }).attr("height")-margins.top-margins.bottom+20)
+                                      .title({text:"~1 SNP",
+                                      yPadding:10})
+                                        )
 
         addSliderEventHandler(sliderID,fig);
 
