@@ -130,5 +130,5 @@ rule make_report:
         --background-fields {config[background_fields]} \
         --tree-dir {params.clusterdir:q}
         """)
-    print(pfunk.green("Polecat report written to:") + f"{output.report}")
+        print(pfunk.green("Polecat report written to:") + f"{output.report}")
 
