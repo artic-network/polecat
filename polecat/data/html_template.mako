@@ -187,7 +187,7 @@
     } 
 
     .tree-container{
-      max-height: 600px;
+      max-height: 1000px;
       overflow: scroll;
     }
     .label{
