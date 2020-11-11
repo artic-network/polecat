@@ -48,6 +48,11 @@
       fill:#86b0a6;
       stroke:dimgrey;
       }
+    .node rect{
+      stroke-width:2;
+      fill:#b08686;
+      stroke:dimgrey;
+    }
     .svg-tooltip {
         background: rgba(69,77,93,.9);
         border-radius: .1rem;
@@ -81,8 +86,9 @@
       stroke: dimgrey
       }
       .node text{
-         font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+         font-family: "ArialNova-Light","HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
          font-weight: 300;
+         font-size: 0.9em;
       }
     /* .starter-template {
       padding: 40px 15px;
@@ -170,6 +176,11 @@
       background: #86b0a6;
       cursor: pointer;
     } 
+
+    .tree-container{
+      max-height: 600px;
+      overflow: scroll;
+    }
     </style>
 
   </head>
@@ -219,8 +230,30 @@
                               .text((d,i)=>i===0? d + " : ": d);
               }
       }
+      <%text>
+      function addSliderEventHandler(sliderID,fig){
+        const svg = fig.svgSelection.select(function() { return this.parentNode; })
+        const initialHeight = svg.attr("height");
+        const potentialMaxHeight = fig.tree().externalNodes.length*50+20; // 50 pixels for each tip plus a little for margins
+        const maxHeight = potentialMaxHeight>initialHeight?potentialMaxHeight:initialHeight;
+        
+        if(maxHeight===initialHeight){
+          d3.select(`#${sliderID}`).remove();// don't need  a slider
+          return;
+        }
+        const heightScale = d3.scaleLinear()
+                .range([initialHeight,maxHeight])
+                .domain([0,1])
 
-      function buildTree(svgID, myTreeString,tooltipID,backgroundDataString) {
+        d3.select(`#${sliderID}`).on("input",function(){
+              const svgHeight = heightScale(this.value);
+              svg.attr("height", svgHeight);
+            fig.update();
+        })
+      }
+      </%text>
+
+      function buildTree(svgID, myTreeString,tooltipID,backgroundDataString,sliderID) {
           const backgroundData = JSON.parse(backgroundDataString);
           const updateTable = updateTableFactory(tooltipID, backgroundData);
           const margins = {top:50,bottom:60,left:100,right:250}
@@ -230,28 +263,35 @@
           const tree = figtree.Tree.parseNewick(newickString);
           const fig = new figtree.FigTree(document.getElementById(svgID),margins, tree)
           fig.layout(figtree.rectangularLayout)
-                        .nodes(figtree.circle()
-                                  .filter(n=>!n.children||n[fig.id].collapsed)
-                                .attr("r",8)
-                                .hilightOnHover(20)
-                                .onClick(node=>updateTable(node.name)),
-                              figtree.tipLabel(v=>v.name)
-                                )
+                  .nodes(figtree.circle()
+                                  .filter(n=>!n.children)
+                                  .attr("r",8)
+                                  .hilightOnHover(20)
+                                  .onClick(node=>updateTable(node.name)),
+                          figtree.tipLabel(v=>v.name),
+                          figtree.rectangle()
+                                  .filter(n=>n[fig.id].collapsed)
+                                  .attr("width",20)
+                                  .attr("height",20)
+                  )
                         .nodeBackgrounds(figtree.circle()
                                           .attr("r", 10)
-                                .filter(n=>!n.children||n[fig.id].collapsed)
+                                .filter(n=>!n.children)
                                         .attr("fill","dimgrey")
                                         )
                         .branches(figtree.branch()
                                     .hilightOnHover(20) 
                                     .collapseOnClick()
                             )
+
+        addSliderEventHandler(sliderID,fig);
+
       }
     </script>
 
     <div class="container">
       <a href="#" id="toTopBtn" class="cd-top text-replace js-cd-top cd-top--is-visible cd-top--fade-out" data-abc="true"></a>
-      <div class="page-header">
+      <div>
         <header>
             polecat | 
             <small class="text-muted">Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool</small>
@@ -313,11 +353,12 @@
         <br>
 
           <div id="slider_${cluster['cluster_no']}">
-            <input class="slider" type="range" id="rangeinput_${cluster['cluster_no']}"  min="400" max="700" style="width: 100px" value="400" />
+            <p>Expansion</p>
+            <input class="slider" type="range" id="rangeinput_${cluster['cluster_no']}"  min="0" max="1" style="width: 100px" step="0.01" value="0" />
             <span class="highlight"></span>
           </div> 
 
-          <div class="row">
+          <div class="row tree-container">
       
             <div class="col-xs-7">
               <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
@@ -325,7 +366,11 @@
             <div class="col-xs-4" id="tooltip_${cluster['cluster_no']}">
             </div> 
             <script type="text/javascript">
-              buildTree("tree_${cluster['cluster_no']}", "${cluster['treeString']}","tooltip_${cluster['cluster_no']}",'${background_data}');
+              buildTree("tree_${cluster['cluster_no']}", 
+                        "${cluster['treeString']}",
+                        "tooltip_${cluster['cluster_no']}",
+                        '${background_data}',
+                        "rangeinput_${cluster['cluster_no']}");
             </script> 
           </div> 
 
