@@ -18,10 +18,11 @@ rule all:
     input:
         os.path.join(config["outdir"],"report", f"{output_prefix}.html")
 
-rule polecat_csv:
+rule check_tree_for_clusters:
     input:
         tree = config["background_tree"],
         metadata = config["background_metadata"]
+    log: os.path.join(config["tempdir"],"logs","jclusterfunk.log")
     output:
         csv = os.path.join(config["outdir"],"clusters.all.csv")
     shell:
@@ -39,14 +40,14 @@ rule polecat_csv:
         {config[rank_by]} \
         --id-column sequence_name \
         -o "{output.csv}" \
-        --ignore-missing 
+        --ignore-missing &> {log}
         """
 
 rule process_clusters:
     input:
         snakefile = os.path.join(workflow.current_basedir,"polecat_pipeline.smk"),
         background_metadata = config["background_metadata"],
-        query = rules.polecat_csv.output.csv
+        query = rules.check_tree_for_clusters.output.csv
     threads: workflow.cores
     params:
         clusterdir = os.path.join(config["outdir"],"cluster_trees")
@@ -67,6 +68,7 @@ rule process_clusters:
                     clusters[row["node_number"]].append(tip)
                     all_tips.append(tip)
 
+        print(pfunk.green("Number of clusters found: ") + f"{len(clusters)}")
         with open(output.filtered_metadata, "w") as fw:
 
             with open(input.background_metadata, "r") as f:
@@ -109,10 +111,10 @@ rule process_clusters:
         else:
             pass
 
-rule make_report:
+rule render_report:
     input:
         metadata = rules.process_clusters.output.filtered_metadata,
-        csv = rules.polecat_csv.output.csv,
+        csv = rules.check_tree_for_clusters.output.csv,
         template = config["template"]
     params:
         clusterdir = os.path.join(config["outdir"],"cluster_trees")
