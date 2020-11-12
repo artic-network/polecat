@@ -50,6 +50,7 @@ rule process_clusters:
     threads: workflow.cores
     params:
         clusterdir = os.path.join(config["outdir"],"cluster_trees")
+    log:  os.path.join(config["tempdir"],"logs","cluster.log")
     output:
         filtered_metadata = os.path.join(config["outdir"],"tip_metadata.csv"),
         yaml = os.path.join(config["tempdir"],"config.yaml")
@@ -104,7 +105,7 @@ rule process_clusters:
                                 "--configfile {output.yaml:q} "
                                 "--config "
                                 "filtered_metadata={output.filtered_metadata:q} "
-                                "--cores {workflow.cores}")
+                                "--cores {workflow.cores} &> {log}")
         else:
             pass
 

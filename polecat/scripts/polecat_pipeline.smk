@@ -50,7 +50,7 @@ rule cluster_catchment:
         --id-column sequence_name
         """
 
-rule gather_civet:
+rule gather:
     input:
         expand(os.path.join(config["clusterdir"],"{cluster}","{cluster}_subtree_1.newick"), cluster=config["clusters"])
     output:
