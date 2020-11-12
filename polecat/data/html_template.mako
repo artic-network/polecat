@@ -207,6 +207,60 @@
         position: sticky;
         top: 0;
       }
+
+      @media print {
+      .tree-container{
+      max-height: none;
+      overflow: visible;
+      
+    }
+    .slider-block {
+      display: none;
+    }
+    .container {
+    padding-right: 1.5cm;
+    padding-left: 1.5cm;
+    padding-bottom: 1.5cm;
+    margin: 1cm;
+    min-width: 2200px;
+    font-size:2.5vw;
+    }
+    .searchbar {
+      display: none;
+    }
+    h3{ 
+      font-size: 2.5vw;
+    }
+    h2 {
+      font-size: 4vw;
+      padding: 1cm;
+    }
+    h1 {
+      font-size: 5vw;
+    }
+    .command-block {
+      display: none;
+    }
+    pre {
+      display: none;
+    }
+    .polecat-logo {
+      width: 2cm;
+      height: 2cm;
+    }
+    .tree_svg {
+      width: 1200px
+    }
+    .page-footer {
+      display: none;
+    }
+    .polecat-header {
+      text-align: left;
+    }
+    .content-block, p {
+    page-break-inside: avoid;
+    }
+    }
     </style>
 
   </head>
@@ -356,7 +410,7 @@
     <div class="container">
       <a href="#" id="toTopBtn" class="cd-top text-replace js-cd-top cd-top--is-visible cd-top--fade-out" data-abc="true"></a>
       <div>
-        <header>
+        <header class="polecat-header">
             polecat | 
             <small class="text-muted">Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool</small>
             <hr>
@@ -366,7 +420,7 @@
         </h1>
         <br>
         </div>
-        <p>        
+        <p class="command-block">        
         <strong>Command</strong>
         <pre> ${command} </pre>
         </p>
@@ -374,7 +428,7 @@
     
     <br>
 
-    <h3><strong>Table 1</strong> | Summary of clusters   <input style = "border-style:solid; border-color: lightgrey; border-radius: 5px; float:right" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for cluster..." title="searchbar"></h3>
+    <h3><strong>Table 1</strong> | Summary of clusters   <input class="searchbar" style = "border-style:solid; border-color: lightgrey; border-radius: 5px; float:right" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for cluster..." title="searchbar"></h3>
     <table class="table table-striped" id="myTable">
         <tr class="header">
         <th style="width:10%;">Cluster number</th>
@@ -415,7 +469,7 @@
 
         <br>
 
-          <div id="slider_${cluster['cluster_no']}">
+          <div class="slider-block" id="slider_${cluster['cluster_no']}">
             <p>Expansion</p>
             <input class="slider" type="range" id="rangeinput_${cluster['cluster_no']}"  min="0" max="1" style="width: 100px" step="0.01" value="0" />
             <span class="highlight"></span>
@@ -424,7 +478,7 @@
           <div class="row tree-container">
       
             <div class="col-xs-7">
-              <svg width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
+              <svg class="tree_svg" width="600" height="400" id="tree_${cluster['cluster_no']}"></svg>
             </div>
             <div class="col-xs-4 sticky" id="tooltip_${cluster['cluster_no']}">
             </div> 
@@ -465,7 +519,7 @@
         <div class="row">
           <div class="col-sm-1">
             <p>
-            <img src=https://raw.githubusercontent.com/COG-UK/polecat/master/docs/doc_figures/polecat_logo.svg vertical-align="left" width="50" height="50"></img>
+            <img class="polecat-logo" src=https://raw.githubusercontent.com/COG-UK/polecat/master/docs/doc_figures/polecat_logo.svg vertical-align="left" width="50" height="50"></img>
             <p>
         </div>
 
