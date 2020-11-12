@@ -35,8 +35,6 @@ and you should see the help menu of polecat printed
 
 ### Updating polecat
 
-> Note: Even if you have previously installed ``polecat``, as it is being worked on intensively, we recommend you check for updates before running.
-
 To update:
 
 1. ``conda activate polecat``

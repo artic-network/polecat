@@ -7,7 +7,7 @@ Phylogenetic Overview & Local Epidemiological Cluster Analysis Tool
 Using a background phylogeny, such as the large phylogeny available through the COG-UK infrastructure on CLIMB, <strong>polecat</strong> will identify and flag clusters based on various configurable statistics. 
 
 
-A fully customisable report is generated, summarising information about the clusters of interest.
+An interactive, customisable report is generated, summarising information about the clusters of interest.
 
 
 ### polecat documentation
@@ -16,6 +16,7 @@ A fully customisable report is generated, summarising information about the clus
   * [Usage](./usage.md)
   * [Statistics options](./statistics.md)
   * [Background data](./background_data.md)
+  * [Example report](./example_report.md)
   * [Contributors & acknowledgements](./acknowledgements.md)
 
 

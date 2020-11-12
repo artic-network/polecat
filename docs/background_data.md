@@ -74,4 +74,4 @@ The following fields must be **always** present in this background metadata, or 
 - **adm2:** 
 
 
-### [Next: Usage](./usage.md)
+### [Next: Example report](./example_report.md)
