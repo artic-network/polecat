@@ -3,22 +3,15 @@
 # Contributors and acknowledgements
 
 ### Created by
-```
+
+Áine O'Toole, JT McCrone & Andrew Rambaut
             Rambaut Group              
         Edinburgh University   
-```
 
-### Contributors
-``` 
-    Aine O'Toole                          
-    JT McCrone         
-    Verity Hill                
-    Ben Jackson    
-    Andrew Rambaut       
-```
+
 
 ### Funding
-```
+
                                             
                 ARTIC Network               
     Wellcome Trust Collaborators Award      
@@ -32,7 +25,7 @@
 European Research Council Consolidator Grant
                 ERC-2016-COG                
                                             
-```
+
 
 ### Acknowledgements
 

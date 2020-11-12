@@ -34,6 +34,7 @@ optional arguments:
 
 input output options:
   -c CONFIG, --config CONFIG
+                        
                         Input config file
   --outdir OUTDIR       Output directory. Default: current working directory
   -o OUTPUT_PREFIX, --output-prefix OUTPUT_PREFIX
