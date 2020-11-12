@@ -38,10 +38,11 @@
         margin-right: auto;
         width: 50%;
         }
-    .nodeBackgrounds{
+    .node-background{
         fill:dimgrey;
         stroke:dimgrey;
     }
+
     .node circle{
       stroke-width:0;
       cursor:pointer;
@@ -207,60 +208,178 @@
         position: sticky;
         top: 0;
       }
+      .searchbar {
+        border-style:solid; 
+        border-color: lightgrey; 
+        border-radius: 5px; 
+        float:right
+      }
 
-      @media print {
+    @media print {
       .tree-container{
       max-height: none;
       overflow: visible;
       
+      }
+      
+      .slider-block {
+        display: none;
+      }
+      .container {
+      padding-right: 1.5cm;
+      padding-left: 1.5cm;
+      padding-bottom: 1.5cm;
+      margin: 1cm;
+      min-width: 2200px;
+      font-size:2.5vw;
+      }
+      .searchbar {
+        display: none;
+      }
+      h3{ 
+        font-size: 2.5vw;
+      }
+      h2 {
+        font-size: 4vw;
+        padding: 1cm;
+      }
+      h1 {
+        font-size: 5vw;
+      }
+      .command-block {
+        display: none;
+      }
+      pre {
+        display: none;
+      }
+      .polecat-logo {
+        width: 2cm;
+        height: 2cm;
+      }
+      .tree_svg {
+        width: 1200px
+      }
+      .page-footer {
+        display: none;
+      }
+      .polecat-header {
+        text-align: left;
+      }
+      .content-block, p {
+      page-break-inside: avoid;
+      }
     }
-    .slider-block {
-      display: none;
+    @media screen and (prefers-color-scheme: dark) {
+      body {
+          background-color: #17141F;
+          color: #F2E7DC;
+          opacity: 0.95;
+        }
+        img {
+          filter: brightness(.8) contrast(1.2);
+        }
+      .component {
+        background-color: #2C2640;
+      }
+      .table-striped>tbody>tr:nth-child(odd) {
+        background-color: #2C2640;
+        /* border-top-color: #3B325B; */
+        /* border-color: #2C2640; */
+        opacity: 0.9;
+      }
+      .table {
+        border-top: 0px;
+        /* border-color: #3B325B; */
+        background-color: #17141F;
     }
-    .container {
-    padding-right: 1.5cm;
-    padding-left: 1.5cm;
-    padding-bottom: 1.5cm;
-    margin: 1cm;
-    min-width: 2200px;
-    font-size:2.5vw;
-    }
-    .searchbar {
-      display: none;
-    }
-    h3{ 
-      font-size: 2.5vw;
-    }
-    h2 {
-      font-size: 4vw;
-      padding: 1cm;
-    }
-    h1 {
-      font-size: 5vw;
-    }
-    .command-block {
-      display: none;
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+      border-top: none;
     }
     pre {
-      display: none;
+      background-color: #3B325B;
+      color: #F2E7DC;
+      border: none;
+      opacity: 0.8;
     }
-    .polecat-logo {
-      width: 2cm;
-      height: 2cm;
+    .searchbar {
+      background-color: #3B325B;
+      color: #F2E7DC;
+      border-style:none;
+      opacity: 0.8;
+      }
+    .slider {
+      background: #F2E7DC;
+      stroke: #F2E7DC;
     }
-    .tree_svg {
-      width: 1200px
+    .slider::-webkit-slider-thumb {
+      background: #5F9C82;
+      fill: #5F9C82;
+      stroke: #F2E7DC;
     }
-    .page-footer {
-      display: none;
+    .slider::-moz-range-thumb {
+      stroke: #F2E7DC;
+      background: #5F9C82;
+      fill: #5F9C82;
+    } 
+    .node-background{
+        fill:#F2E7DC;
+        stroke:#F2E7DC;
+        opacity: 0.85;
     }
-    .polecat-header {
-      text-align: left;
+
+    .node circle{
+      stroke-width:0;
+      cursor:pointer;
+      fill:#5F9C82;
+      stroke:#F2E7DC;
+      
+      }
+    .node circle.selected{
+      stroke-width:0;
+      cursor:pointer;
+      fill:#E27E7E;
+      stroke:#F2E7DC;
+      opacity: 1;
+      }
+    .node rect{
+      stroke-width:2;
+      fill:#E27E7E;
+      stroke:#F2E7DC;
     }
-    .content-block, p {
-    page-break-inside: avoid;
+    .svg-tooltip {
+        background: rgba(69,77,93,.9);
+        color: #F2E7DC;
+  }
+
+  .branch path{
+    stroke: #F2E7DC;
+    opacity: 0.85;
     }
+    .branch.hovered path{
+      stroke:#F2E7DC;
+      opacity: 1;
     }
+      .node.hovered circle{
+        stroke:#F2E7DC;
+      opacity: 1;
+      }
+      .node text{
+         font-family: "ArialNova-Light","HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+         font-weight: 300;
+         font-size: 0.9em;
+         color: #F2E7DC;
+         fill: #F2E7DC;        
+      }
+
+      .scale-bar line {
+        stroke: #F2E7DC;
+      }
+      .scale-bar text{
+        fill: #F2E7DC;
+        color:  #F2E7DC;
+      }
+    }
+
     </style>
 
   </head>
@@ -375,7 +494,6 @@
                         .nodeBackgrounds(figtree.circle()
                                           .attr("r", 10)
                                 .filter(n=>!n.children)
-                                        .attr("fill","dimgrey")
                                         )
                         .branches(figtree.branch()
                                     .hilightOnHover(20) 
@@ -428,7 +546,7 @@
     
     <br>
 
-    <h3><strong>Table 1</strong> | Summary of clusters   <input class="searchbar" style = "border-style:solid; border-color: lightgrey; border-radius: 5px; float:right" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for cluster..." title="searchbar"></h3>
+    <h3><strong>Table 1</strong> | Summary of clusters   <input class="searchbar" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for cluster..." title="searchbar"></h3>
     <table class="table table-striped" id="myTable">
         <tr class="header">
         <th style="width:10%;">Cluster number</th>
