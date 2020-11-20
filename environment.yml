@@ -6,5 +6,5 @@ channels:
 dependencies:
   - snakemake-minimal=5.13
   - cov-ert::jclusterfunk
-  -pip:
+  - pip:
     - git+https://github.com/cov-ert/reportfunk.git
