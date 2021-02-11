@@ -32,7 +32,7 @@ def make_summary_data(metadata):
     with open(metadata, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            cluster_dict = {"cluster_no":row["node_number"],
+            cluster_dict = {"cluster_no":row["node_id"],
                             "most_recent_tip": row["most_recent_tip"], 
                             "tip_count": row["tip_count"],
                             "admin0_count":row["admin0_count"],
@@ -62,7 +62,7 @@ def make_cluster_data(metadata,include_stats,tree_dir):
 
             table_no += 1
             
-            cluster_no = row["node_number"]
+            cluster_no = row["node_id"]
 
             stats = []
             for stat in include_stats:
