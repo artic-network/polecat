@@ -30,7 +30,7 @@ def get_defaults():
                     "max_recency":"",
                     "max_size":"",
                     "min_size":"",
-                    "stats":"node_number,day_range,growth_rate,tip_count,lineage,uk_lineage",
+                    "stats":"node_id,day_range,growth_rate,tip_count,lineage,uk_lineage",
                     "background_fields":"sequence_name,sample_date,epi_week,country,adm2,uk_lineage,lineage,phylotype",
                     "command":"",
                     "min_UK":"",
@@ -50,8 +50,8 @@ def get_defaults():
                     "config":False,
                     "data_column":"sequence_name",
                     "output_prefix":"polecat",
-                    "summary_fields":"node_number,most_recent_tip,tip_count,admin0_count,admin1_count",
-                    "cluster_fields":"node_number,day_range,tip_count,uk_tip_count,uk_chain_count,identical_count",
+                    "summary_fields":"node_id,most_recent_tip,tip_count,admin0_count,admin1_count",
+                    "cluster_fields":"node_id,day_range,tip_count,uk_tip_count,uk_chain_count,identical_count",
                     "no_temp":False,
                     "force":True,
                     "launch_browser":False,
@@ -216,7 +216,7 @@ def report_group_to_config(args,config):
         
 
 def get_stat_list():
-    return "node_number,parent_number,most_recent_tip,least_recent_tip,day_range,persistence,recency,age,tip_count,uk_tip_count,uk_child_count,uk_chain_count,identical_count,divergence_ratio,mean_tip_divergence,stem_length,growth_rate,lineage,uk_lineage,proportion_uk,admin0_count,admin1_count,admin2_count,admin0_mode,admin1_mode,admin2_mode,admin1_entropy,admin2_entropy,tips".split(",")
+    return "node_id,parent_id,most_recent_tip,least_recent_tip,day_range,persistence,recency,age,tip_count,uk_tip_count,uk_child_count,uk_chain_count,identical_count,divergence_ratio,mean_tip_divergence,stem_length,growth_rate,lineage,uk_lineage,proportion_uk,admin0_count,admin1_count,admin2_count,admin0_mode,admin1_mode,admin2_mode,admin1_entropy,admin2_entropy,tips".split(",")
 
 def check_metadata_for_stat_fields(config):
 
