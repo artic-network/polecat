@@ -65,7 +65,7 @@ rule process_clusters:
                 
                 tips = row["tips"].split("|")
                 for tip in tips:
-                    clusters[row["node_number"]].append(tip)
+                    clusters[row["node_id"]].append(tip)
                     all_tips.append(tip)
 
         print(pfunk.green("Number of clusters found: ") + f"{len(clusters)}")
