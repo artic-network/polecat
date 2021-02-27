@@ -15,21 +15,21 @@ A fully customisable report is generated, summarising information about the clus
 
 ### polecat documentation
 
-Full documentation can be found at https://cog-uk.github.io/polecat/
+Full documentation can be found at https://artic-network.github.io/polecat/
 
 
-Play around with the example report [here](https://cog-uk.github.io/polecat/report.html)
+Play around with the example report [here](https://artic-network.github.io/polecat/report.html)
 
 
 <strong>Quick Links:</strong>
 
   * [Polecat clusters](https://rambaut.github.io/polecat/clusters.html)
-  * [Install and update polecat](https://cog-uk.github.io/polecat/installation.html)
-  * [Usage](https://cog-uk.github.io/polecat/usage.html)
-  * [Example report](https://cog-uk.github.io/polecat/example_report.html)
-  * [Statistics options](https://cog-uk.github.io/polecat/statistics.html)
-  * [Background data](https://cog-uk.github.io/polecat/background_data.html)
-  * [Contributors & acknowledgements](https://cog-uk.github.io/polecat/acknowledgements.html)
+  * [Install and update polecat](https://artic-network.github.io/polecat/installation.html)
+  * [Usage](https://artic-network.github.io/polecat/usage.html)
+  * [Example report](https://artic-network.github.io/polecat/example_report.html)
+  * [Statistics options](https://artic-network.github.io/polecat/statistics.html)
+  * [Background data](https://artic-network.github.io/polecat/background_data.html)
+  * [Contributors & acknowledgements](https://artic-network.github.io/polecat/acknowledgements.html)
 
 
 
