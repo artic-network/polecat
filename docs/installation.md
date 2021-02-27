@@ -14,7 +14,7 @@ Instructions for installing polecat locally
 
 ### Install polecat
 
-1. ``git clone https://github.com/COG-UK/polecat.git`` and ``cd polecat``
+1. ``git clone https://github.com/artic-network/polecat.git`` and ``cd polecat``
 2. ``conda env create -f environment.yml``
 3. ``conda activate polecat``
 4. ``python setup.py install``
